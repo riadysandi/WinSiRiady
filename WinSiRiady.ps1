@@ -346,29 +346,13 @@ Write-GuiLog "Memuat daftar aplikasi dari: $appsJsonPath"
 function Build-AppGrid {
     param($group, $container, $checkboxList)
 
-    # Header row dengan tombol Pilih Semua
-    $headerPanel = New-Object System.Windows.Controls.DockPanel
+    # Header row
+    $headerPanel = New-Object System.Windows.Controls.TextBlock
+    $headerPanel.Text = "- $($group.Name)"
+    $headerPanel.FontSize = 13
+    $headerPanel.FontWeight = [System.Windows.FontWeights]::Bold
+    $headerPanel.Foreground = New-Brush "#89b4fa"
     $headerPanel.Margin = New-Object System.Windows.Thickness(0, 8, 0, 3)
-
-    $selectBtn = New-Object System.Windows.Controls.Button
-    $selectBtn.Content = "Pilih Semua"
-    $selectBtn.FontSize = 11
-    $selectBtn.Padding = New-Object System.Windows.Thickness(8, 2, 8, 2)
-    $selectBtn.Background = New-Brush "#313244"
-    $selectBtn.Foreground = New-Brush "#a6adc8"
-    $selectBtn.BorderThickness = [System.Windows.Thickness]::new(0)
-    $selectBtn.VerticalAlignment = [System.Windows.VerticalAlignment]::Center
-    [System.Windows.Controls.DockPanel]::SetDock($selectBtn, [System.Windows.Controls.Dock]::Right)
-
-    $headerText = New-Object System.Windows.Controls.TextBlock
-    $headerText.Text = "- $($group.Name)"
-    $headerText.FontSize = 13
-    $headerText.FontWeight = [System.Windows.FontWeights]::Bold
-    $headerText.Foreground = New-Brush "#89b4fa"
-    $headerText.VerticalAlignment = [System.Windows.VerticalAlignment]::Center
-
-    $headerPanel.Children.Add($selectBtn) | Out-Null
-    $headerPanel.Children.Add($headerText) | Out-Null
     $container.Children.Add($headerPanel) | Out-Null
 
     # Grid 3 kolom
@@ -408,14 +392,7 @@ function Build-AppGrid {
 
     $container.Children.Add($grid) | Out-Null
 
-    # Select All button click: capture boxes in Tag
-    $selectBtn.Tag = @{ Boxes = $catBoxes }
-    $selectBtn.Add_Click({
-        $boxes = $this.Tag.Boxes | Where-Object { $_.IsEnabled }
-        $allChecked = ($boxes | Where-Object { -not $_.IsChecked }).Count -eq 0
-        foreach ($b in $boxes) { $b.IsChecked = -not $allChecked }
-        $this.Content = if ($allChecked) { "Pilih Semua" } else { "Batal Semua" }
-    })
+
 
     # Store in global for search filter
     $Global:CategoryGroups[$group.Name] = @{
