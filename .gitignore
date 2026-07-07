@@ -14,3 +14,7 @@ $RECYCLE.BIN/
 
 # PowerShell run history or temporary modules
 .psfiles/
+
+# Dokumentasi lokal (tidak di-push ke GitHub)
+PANDUAN_APLIKASI.md
+debug_*.ps1
