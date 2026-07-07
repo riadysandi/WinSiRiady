@@ -170,13 +170,15 @@ if (Test-Path $appsJsonPath) {
         # List of created CheckBoxes to scan when installing
         $Global:AppCheckBoxes = @()
 
+        $brushConverter = New-Object System.Windows.Media.BrushConverter
+
         foreach ($group in $groupedApps) {
             # Category Header
             $header = New-Object System.Windows.Controls.TextBlock
             $header.Text = $group.Name
             $header.FontSize = 14
             $header.FontWeight = [System.Windows.FontWeights]::Bold
-            $header.Foreground = [System.Windows.Media.BrushConverter]::ConvertFromString("#cba6f7")
+            $header.Foreground = $brushConverter.ConvertFromString("#cba6f7")
             $header.Margin = "0,10,0,5"
             $AppsContainer.Children.Add($header) | Out-Null
 
@@ -184,7 +186,7 @@ if (Test-Path $appsJsonPath) {
                 # Individual CheckBox for Application
                 $chk = New-Object System.Windows.Controls.CheckBox
                 $chk.Content = "$($app.Name) - $($app.Description)"
-                $chk.Foreground = [System.Windows.Media.BrushConverter]::ConvertFromString("#cdd6f4")
+                $chk.Foreground = $brushConverter.ConvertFromString("#cdd6f4")
                 $chk.FontSize = 12
                 $chk.Margin = "10,2,0,2"
                 
