@@ -46,7 +46,6 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase, Sys
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="180"/>
         </Grid.RowDefinitions>
 
         <!-- Header -->
@@ -102,7 +101,19 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase, Sys
                 </Grid>
             </TabItem>
 
-            <!-- TAB 3: ABOUT -->
+            <!-- TAB 3: CONSOLE LOG -->
+            <TabItem Header="Console Log">
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Text="Console Output Log:" FontSize="12" Foreground="#a6adc8" Margin="0,0,0,5"/>
+                    <TextBox Grid.Row="1" x:Name="TxtLog" Background="#11111b" Foreground="#a6e3a1" FontFamily="Consolas" FontSize="12" BorderBrush="#313244" VerticalScrollBarVisibility="Auto" IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap"/>
+                </Grid>
+            </TabItem>
+
+            <!-- TAB 4: ABOUT -->
             <TabItem Header="Tentang">
                 <StackPanel Margin="20">
                     <TextBlock Text="WinSiRiady Utility v1.0.0" FontSize="20" FontWeight="Bold" Foreground="#89b4fa" Margin="0,0,0,10"/>
@@ -114,16 +125,6 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase, Sys
                 </StackPanel>
             </TabItem>
         </TabControl>
-
-        <!-- Log Output Console -->
-        <Grid Grid.Row="2" Margin="10,0,10,10">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-            <TextBlock Grid.Row="0" Text="Console Output Log:" FontSize="12" Foreground="#a6adc8" Margin="0,0,0,5"/>
-            <TextBox Grid.Row="1" x:Name="TxtLog" Background="#11111b" Foreground="#a6e3a1" FontFamily="Consolas" FontSize="12" BorderBrush="#313244" VerticalScrollBarVisibility="Auto" IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap"/>
-        </Grid>
     </Grid>
 </Window>
 "@
@@ -173,13 +174,13 @@ if (Test-Path $appsJsonPath) {
         $apps = Get-Content -Raw -Path $appsJsonPath -Encoding UTF8 | ConvertFrom-Json
         $groupedApps = $apps | Group-Object -Property Category
         foreach ($group in $groupedApps) {
-            # Header Kategori bergaya "- Browsers"
+            # Header Kategori bergaya "- Browsers" (Dicetak Tebal / Bold)
             $header = New-Object System.Windows.Controls.TextBlock
             $header.Text = "- $($group.Name)"
             $header.FontSize = 13
-            $header.FontWeight = [System.Windows.FontWeights]::SemiBold
-            $header.Foreground = New-Brush "#cdd6f4"
-            $header.Margin = "0,12,0,6"
+            $header.FontWeight = [System.Windows.FontWeights]::Bold
+            $header.Foreground = New-Brush "#89b4fa"
+            $header.Margin = "0,6,0,3"
             $AppsContainer.Children.Add($header) | Out-Null
 
             # Grid 3 Kolom untuk aplikasi dalam kategori ini
@@ -204,11 +205,12 @@ if (Test-Path $appsJsonPath) {
                 $row = [Math]::Floor($i / 3)
                 $col = $i % 3
 
+                # CheckBox Aplikasi (Font Normal / Tidak Bold, Jarak Rapat)
                 $chk = New-Object System.Windows.Controls.CheckBox
                 $chk.Content = $app.Name
                 $chk.Foreground = New-Brush "#cdd6f4"
                 $chk.FontSize = 12
-                $chk.Margin = "4,3,4,3"
+                $chk.Margin = "4,1,4,1"
                 $chk.Tag = $app
                 [System.Windows.Controls.Grid]::SetRow($chk, $row)
                 [System.Windows.Controls.Grid]::SetColumn($chk, $col)
