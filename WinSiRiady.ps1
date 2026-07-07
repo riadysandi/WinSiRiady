@@ -281,11 +281,11 @@ $BtnInstallApps.Add_Click({
         foreach ($app in $appsToInstall) {
             Write-Output ">> Memproses: $($app.Name)..."
             if ($app.Type -eq "winget") {
-                $proc = Start-Process winget -ArgumentList "install --id $($app.Id) --silent --accept-source-agreements --accept-package-agreements" -NoNewWindow -PassThru -Wait
-                if ($proc.ExitCode -eq 0) {
-                    Write-Output "[+] Berhasil: $($app.Name)"
+                & winget install --id $app.Id --silent --accept-source-agreements --accept-package-agreements
+                if ($LASTEXITCODE -eq 0 -or $LASTEXITCODE -eq -1978335189 -or $LASTEXITCODE -eq -1978335222) {
+                    Write-Output "[+] Berhasil: $($app.Name) (Terinstal / Sudah ada)"
                 } else {
-                    Write-Output "[-] Gagal: $($app.Name) (Exit code: $($proc.ExitCode))"
+                    Write-Output "[-] Gagal: $($app.Name) (Exit code: $LASTEXITCODE)"
                 }
             }
             elseif ($app.Type -eq "github_release") {
