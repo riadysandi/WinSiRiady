@@ -173,25 +173,50 @@ if (Test-Path $appsJsonPath) {
         $apps = Get-Content -Raw -Path $appsJsonPath -Encoding UTF8 | ConvertFrom-Json
         $groupedApps = $apps | Group-Object -Property Category
         foreach ($group in $groupedApps) {
-            # Header Kategori
+            # Header Kategori bergaya "- Browsers"
             $header = New-Object System.Windows.Controls.TextBlock
-            $header.Text = $group.Name
-            $header.FontSize = 14
-            $header.FontWeight = [System.Windows.FontWeights]::Bold
-            $header.Foreground = New-Brush "#cba6f7"
-            $header.Margin = "0,10,0,5"
+            $header.Text = "- $($group.Name)"
+            $header.FontSize = 13
+            $header.FontWeight = [System.Windows.FontWeights]::SemiBold
+            $header.Foreground = New-Brush "#cdd6f4"
+            $header.Margin = "0,12,0,6"
             $AppsContainer.Children.Add($header) | Out-Null
 
-            foreach ($app in $group.Group) {
+            # Grid 3 Kolom untuk aplikasi dalam kategori ini
+            $grid = New-Object System.Windows.Controls.Grid
+            $col1 = New-Object System.Windows.Controls.ColumnDefinition; $col1.Width = [System.Windows.GridLength]::new(1, [System.Windows.GridUnitType]::Star)
+            $col2 = New-Object System.Windows.Controls.ColumnDefinition; $col2.Width = [System.Windows.GridLength]::new(1, [System.Windows.GridUnitType]::Star)
+            $col3 = New-Object System.Windows.Controls.ColumnDefinition; $col3.Width = [System.Windows.GridLength]::new(1, [System.Windows.GridUnitType]::Star)
+            $grid.ColumnDefinitions.Add($col1)
+            $grid.ColumnDefinitions.Add($col2)
+            $grid.ColumnDefinitions.Add($col3)
+
+            $appList = @($group.Group)
+            $rowCount = [Math]::Ceiling($appList.Count / 3)
+            for ($r = 0; $r -lt $rowCount; $r++) {
+                $rowDef = New-Object System.Windows.Controls.RowDefinition
+                $rowDef.Height = [System.Windows.GridLength]::Auto
+                $grid.RowDefinitions.Add($rowDef)
+            }
+
+            for ($i = 0; $i -lt $appList.Count; $i++) {
+                $app = $appList[$i]
+                $row = [Math]::Floor($i / 3)
+                $col = $i % 3
+
                 $chk = New-Object System.Windows.Controls.CheckBox
-                $chk.Content = "$($app.Name)  -  $($app.Description)"
+                $chk.Content = $app.Name
                 $chk.Foreground = New-Brush "#cdd6f4"
                 $chk.FontSize = 12
-                $chk.Margin = "10,3,0,3"
+                $chk.Margin = "4,3,4,3"
                 $chk.Tag = $app
-                $AppsContainer.Children.Add($chk) | Out-Null
+                [System.Windows.Controls.Grid]::SetRow($chk, $row)
+                [System.Windows.Controls.Grid]::SetColumn($chk, $col)
+                $grid.Children.Add($chk) | Out-Null
                 $Global:AppCheckBoxes += $chk
             }
+
+            $AppsContainer.Children.Add($grid) | Out-Null
         }
         Write-GuiLog "Berhasil memuat $($apps.Count) aplikasi dalam $($groupedApps.Count) kategori."
     } catch {
