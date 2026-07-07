@@ -1130,6 +1130,10 @@ $BtnGlpiInstall.Add_Click({
         Show-CustomNotification "TAG tidak boleh kosong untuk instalasi baru!" "warning"
         return
     }
+    if ($tag -notmatch '^\d+$') {
+        Show-CustomNotification "TAG hanya boleh diisi angka!" "warning"
+        return
+    }
 
     $BtnGlpiInstall.IsEnabled = $false
     $BtnGlpiUpdateTag.IsEnabled = $false
@@ -1154,6 +1158,10 @@ $BtnGlpiUpdateTag.Add_Click({
     $newTag = $TxtGlpiCurrentTag.Text.Trim()
     if ([string]::IsNullOrWhiteSpace($newTag)) {
         Show-CustomNotification "TAG baru tidak boleh kosong!" "warning"
+        return
+    }
+    if ($newTag -notmatch '^\d+$') {
+        Show-CustomNotification "TAG hanya boleh diisi angka!" "warning"
         return
     }
     $regPath = "HKLM:\SOFTWARE\GLPI-Agent"
@@ -1212,6 +1220,24 @@ $BtnGlpiUninstall.Add_Click({
     $logPath = "$WinSiRiadyDir\install_history.log"
     $Global:Job = Start-Job -ScriptBlock $GlpiUninstallScriptBlock -ArgumentList $logPath
     $Global:MonitorTimer.Start()
+})
+
+$TxtGlpiInstallTag.Add_TextChanged({
+    $text = $this.Text
+    $numeric = $text -replace '[^0-9]', ''
+    if ($text -ne $numeric) {
+        $this.Text = $numeric
+        $this.CaretIndex = $numeric.Length
+    }
+})
+
+$TxtGlpiCurrentTag.Add_TextChanged({
+    $text = $this.Text
+    $numeric = $text -replace '[^0-9]', ''
+    if ($text -ne $numeric) {
+        $this.Text = $numeric
+        $this.CaretIndex = $numeric.Length
+    }
 })
 
 Update-GlpiStatus
