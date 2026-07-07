@@ -5,7 +5,7 @@
 # === STEP 1: ADMINISTRATOR CHECK ===
 $isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 if (-not $isAdmin) {
-    Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -Command `"irm 'https://raw.githubusercontent.com/riadysandi/WinSiRiady/master/WinSiRiady.ps1' | iex`"" -Verb RunAs
+    Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -Command `"irm 'https://cdn.jsdelivr.net/gh/riadysandi/WinSiRiady@master/WinSiRiady.ps1' | iex`"" -Verb RunAs
     exit
 }
 
@@ -17,7 +17,7 @@ $LocalRoot = if ($PSScriptRoot -and $PSScriptRoot -ne "") {
 } else {
     $tempRoot = Join-Path $env:TEMP "WinSiRiady"
     if (-not (Test-Path $tempRoot)) { New-Item -ItemType Directory -Path $tempRoot -Force | Out-Null }
-    $baseUrl = "https://raw.githubusercontent.com/riadysandi/WinSiRiady/master"
+    $baseUrl = "https://cdn.jsdelivr.net/gh/riadysandi/WinSiRiady@master"
     Write-Host "[WinSiRiady] Mengunduh berkas dari GitHub..." -ForegroundColor Cyan
     try {
         Invoke-WebRequest -Uri "$baseUrl/apps.json" -OutFile (Join-Path $tempRoot "apps.json") -UseBasicParsing -ErrorAction Stop
