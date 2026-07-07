@@ -69,7 +69,7 @@
     "Type": "download_to_folder",
     "Url": "https://cloud.pinusmerahabadi.co.id/index.php/s/6wGFSEAbRPHc8da/download",
     "FileName": "Resetter Epson L5190 ITKoding.rar",
-    "Extract": true,
+    "Extract": false,
     "Description": "Unduh dan ekstrak kumpulan file driver ke C:\\WinSiRiady."
   }
 ]
