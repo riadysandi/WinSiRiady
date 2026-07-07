@@ -197,7 +197,8 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase, Sys
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/> <!-- Title -->
                     <RowDefinition Height="Auto"/> <!-- Status Banner Card -->
-                    <RowDefinition Height="*"/>    <!-- 2 Columns Grid -->
+                    <RowDefinition Height="Auto"/> <!-- 2 Columns Grid (Install & Update TAG) -->
+                    <RowDefinition Height="*"/>    <!-- Center Deploy Button Area -->
                     <RowDefinition Height="Auto"/> <!-- Progress Label -->
                     <RowDefinition Height="Auto"/> <!-- Progress Bar -->
                 </Grid.RowDefinitions>
@@ -212,7 +213,7 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase, Sys
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock x:Name="TxtGlpiStatusIcon" Grid.Column="0" Text="&#x2713;" FontSize="24" FontWeight="Bold" Margin="0,0,15,0" VerticalAlignment="Center"/>
+                        <TextBlock x:Name="TxtGlpiStatusIcon" Grid.Column="0" Text="" FontSize="24" FontWeight="Bold" Margin="0,0,15,0" VerticalAlignment="Center"/>
                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
                             <TextBlock x:Name="TxtGlpiStatusTitle" Text="Memeriksa Status..." FontSize="14" FontWeight="Bold" Foreground="#cdd6f4"/>
                             <TextBlock x:Name="TxtGlpiStatusDesc" Text="Harap tunggu sebentar." FontSize="11" Foreground="#a6adc8" Margin="0,2,0,0"/>
@@ -220,8 +221,8 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase, Sys
                     </Grid>
                 </Border>
                 
-                <!-- 2 Columns Content -->
-                <Grid Grid.Row="2">
+                <!-- 2 Columns Grid (Install & Update TAG) -->
+                <Grid Grid.Row="2" Margin="0,0,0,20">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="20"/> <!-- Gap -->
@@ -245,14 +246,14 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase, Sys
                         </StackPanel>
                     </Border>
                     
-                    <!-- BOX 2: KELOLA & DEPLOY (Kanan) -->
+                    <!-- BOX 2: KELOLA TAG (Ralat TAG) (Kanan) -->
                     <Border Grid.Column="2" x:Name="BorderGlpiManage" Background="#181825" CornerRadius="10" Padding="20" BorderBrush="#313244" BorderThickness="1" VerticalAlignment="Top">
                         <StackPanel>
-                            <TextBlock Text="Kelola &amp; Sinkronisasi" FontSize="15" FontWeight="Bold" Foreground="#a6e3a1" Margin="0,0,0,5"/>
-                            <TextBlock Text="Perbarui konfigurasi dan deploy data ke server GLPI." FontSize="11" Foreground="#585b70" Margin="0,0,0,15"/>
+                            <TextBlock Text="Ubah Asset TAG" FontSize="15" FontWeight="Bold" Foreground="#a6e3a1" Margin="0,0,0,5"/>
+                            <TextBlock Text="Koreksi Asset TAG jika terjadi salah input sebelumnya." FontSize="11" Foreground="#585b70" Margin="0,0,0,15"/>
                             
                             <TextBlock Text="Ubah Nomor Asset (TAG):" Foreground="#a6adc8" FontSize="12" Margin="0,0,0,6"/>
-                            <Grid Margin="0,0,0,20">
+                            <Grid Margin="0,0,0,18">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="Auto"/>
@@ -264,21 +265,22 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase, Sys
                                     <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
                                 </Button>
                             </Grid>
-                            
-                            <Separator Background="#313244" Margin="0,0,0,18"/>
-                            
-                            <TextBlock Text="Kirim Data Inventory (Deploy):" Foreground="#a6adc8" FontSize="12" Margin="0,0,0,6"/>
-                            <Button x:Name="BtnGlpiDeploy" Content="Deploy Sekarang (Force)" Height="38" Background="#f9e2af" Foreground="#11111b" FontWeight="Bold" BorderThickness="0">
-                                <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
-                            </Button>
                         </StackPanel>
                     </Border>
                 </Grid>
+                
+                <!-- Deploy Sekarang (Bawah Tengah) -->
+                <StackPanel Grid.Row="3" VerticalAlignment="Top" HorizontalAlignment="Center" Width="400" Margin="0,10,0,0">
+                    <TextBlock Text="Kirim Data Inventory (Deploy ke Server):" Foreground="#a6adc8" FontSize="12" HorizontalAlignment="Center" Margin="0,0,0,8"/>
+                    <Button x:Name="BtnGlpiDeploy" Content="Deploy Sekarang (Force Inventory)" Height="42" Background="#f9e2af" Foreground="#11111b" FontWeight="Bold" BorderThickness="0">
+                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="8"/></Style></Button.Resources>
+                    </Button>
+                </StackPanel>
 
                 <!-- Progress Label -->
-                <TextBlock Grid.Row="3" x:Name="TxtGlpiProgressLabel" Text="" Foreground="#a6adc8" FontSize="12" Margin="0,15,0,5" Visibility="Collapsed"/>
+                <TextBlock Grid.Row="4" x:Name="TxtGlpiProgressLabel" Text="" Foreground="#a6adc8" FontSize="12" Margin="0,15,0,5" Visibility="Collapsed"/>
                 <!-- Progress Bar -->
-                <ProgressBar Grid.Row="4" x:Name="PrgGlpi" Height="8" Minimum="0" Maximum="100" Value="0" Background="#313244" Foreground="#89b4fa" BorderThickness="0" Visibility="Collapsed" Margin="0,0,0,10"/>
+                <ProgressBar Grid.Row="5" x:Name="PrgGlpi" Height="8" Minimum="0" Maximum="100" Value="0" Background="#313244" Foreground="#89b4fa" BorderThickness="0" Visibility="Collapsed" Margin="0,0,0,10"/>
             </Grid>
 
             <!-- PAGE 6: TENTANG -->
@@ -432,7 +434,7 @@ function Update-GlpiStatus {
     if ($glpiInstalled -or (Test-Path "C:\Program Files\GLPI-Agent\glpi-agent.bat")) {
         $BorderGlpiStatusBanner.Background = New-Brush "#1a3a2a" # Dark Green
         $BorderGlpiStatusBanner.BorderBrush = New-Brush "#a6e3a1" # Light Green
-        $TxtGlpiStatusIcon.Text = "✓"
+        $TxtGlpiStatusIcon.Text = [char]0x2713
         $TxtGlpiStatusIcon.Foreground = New-Brush "#a6e3a1"
         $TxtGlpiStatusTitle.Text = "GLPI Agent Aktif & Terinstal"
         $TxtGlpiStatusTitle.Foreground = New-Brush "#a6e3a1"
