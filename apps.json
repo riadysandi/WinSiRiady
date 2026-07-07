@@ -1,0 +1,45 @@
+[
+  {
+    "Category": "Browsers",
+    "Name": "Google Chrome",
+    "Type": "winget",
+    "Id": "Google.Chrome",
+    "Description": "Web browser dari Google."
+  },
+  {
+    "Category": "Browsers",
+    "Name": "Mozilla Firefox",
+    "Type": "winget",
+    "Id": "Mozilla.Firefox",
+    "Description": "Web browser open-source yang fokus pada privasi."
+  },
+  {
+    "Category": "Developer Tools",
+    "Name": "Visual Studio Code",
+    "Type": "winget",
+    "Id": "Microsoft.VisualStudioCode",
+    "Description": "Editor kode sumber buatan Microsoft."
+  },
+  {
+    "Category": "Developer Tools",
+    "Name": "Git",
+    "Type": "winget",
+    "Id": "Git.Git",
+    "Description": "Sistem pengontrol versi terdistribusi."
+  },
+  {
+    "Category": "Utilities",
+    "Name": "7-Zip",
+    "Type": "winget",
+    "Id": "7zip.7zip",
+    "Description": "Utilitas pengarsip file berkecepatan kompresi tinggi."
+  },
+  {
+    "Category": "Custom Apps (GitHub Release)",
+    "Name": "Contoh App Kustom (WinSiRiady)",
+    "Type": "github_release",
+    "Repo": "riadysandi/WinSiRiady",
+    "AssetFilter": "*.exe",
+    "Description": "Mengunduh file .exe rilis terbaru langsung dari GitHub Release repositori Anda."
+  }
+]

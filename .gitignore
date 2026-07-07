@@ -1,0 +1,16 @@
+# Windows system files
+[Dd]esktop.ini
+Thumbs.db
+ehthumbs.db
+$RECYCLE.BIN/
+
+# Temporary files & Logs
+*.log
+*.tmp
+*.temp
+.vs/
+*.suo
+*.user
+
+# PowerShell run history or temporary modules
+.psfiles/
