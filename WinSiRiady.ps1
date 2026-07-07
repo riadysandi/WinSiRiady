@@ -329,6 +329,46 @@ $BtnInstallApps.Add_Click({
                     Write-Output "[-] Error unduhan langsung: $_"
                 }
             }
+            elseif ($app.Type -eq "download_to_folder") {
+                try {
+                    $targetDir = "C:\WinSiRiady"
+                    if (-not (Test-Path $targetDir)) {
+                        New-Item -ItemType Directory -Path $targetDir -Force | Out-Null
+                        Write-Output "[*] Membuat folder: $targetDir"
+                    }
+                    
+                    $fileName = if ($app.FileName) { $app.FileName } else { [System.IO.Path]::GetFileName([System.Uri]::new($app.Url).AbsolutePath) }
+                    if (-not $fileName) { $fileName = "downloaded_file.zip" }
+                    
+                    $dest = Join-Path $targetDir $fileName
+                    Write-Output "    Mengunduh berkas ke $targetDir..."
+                    Invoke-WebRequest -Uri $app.Url -OutFile $dest -UseBasicParsing -ErrorAction Stop
+                    Write-Output "[+] Berkas berhasil diunduh ke: $dest"
+                    
+                    # Auto extract if Extract is set to true
+                    if ($app.Extract -eq $true) {
+                        if ($fileName.EndsWith(".zip", [System.StringComparison]::OrdinalIgnoreCase)) {
+                            Write-Output "    Mengekstrak berkas ZIP..."
+                            Expand-Archive -Path $dest -DestinationPath $targetDir -Force
+                            Write-Output "[+] Ekstraksi ZIP selesai."
+                            Remove-Item $dest -ErrorAction SilentlyContinue
+                        }
+                        elseif ($fileName.EndsWith(".rar", [System.StringComparison]::OrdinalIgnoreCase) -or $fileName.EndsWith(".7z", [System.StringComparison]::OrdinalIgnoreCase)) {
+                            $sevenZip = "C:\Program Files\7-Zip\7z.exe"
+                            if (Test-Path $sevenZip) {
+                                Write-Output "    Mengekstrak berkas dengan 7-Zip..."
+                                & $sevenZip x $dest "-o$targetDir" -y | Out-Null
+                                Write-Output "[+] Ekstraksi selesai."
+                                Remove-Item $dest -ErrorAction SilentlyContinue
+                            } else {
+                                Write-Output "[!] Gagal mengekstrak: 7-Zip tidak ditemukan di $sevenZip. File tetap disimpan di: $dest"
+                            }
+                        }
+                    }
+                } catch {
+                    Write-Output "[-] Error download_to_folder: $_"
+                }
+            }
         }
     }
 
