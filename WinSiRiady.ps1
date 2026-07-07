@@ -267,12 +267,21 @@ function New-Brush {
 function Show-CustomNotification {
     param(
         [string]$message,
-        [string]$icon = "✓",
-        [string]$iconColor = "#a6e3a1"
+        [string]$type = "success"
     )
+    
+    # Petakan tipe ikon ke XML entity aman dan warna CSS/WPF
+    $icon = "&#x2713;"     # Simbol Checkmark ✓ (Aman dari encoding)
+    $iconColor = "#a6e3a1" # Hijau sukses
+    
+    if ($type -eq "warning") {
+        $icon = "!"
+        $iconColor = "#f9e2af" # Kuning peringatan
+    }
     
     [xml]$notifXaml = @"
     <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
             Title="WinSiRiady Notification" Height="170" Width="380" Background="Transparent" WindowStartupLocation="CenterOwner" ResizeMode="NoResize" WindowStyle="None" AllowsTransparency="True">
         <Border Background="#1e1e2e" BorderBrush="#313244" BorderThickness="2" CornerRadius="12">
             <Grid Margin="15">
