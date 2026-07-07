@@ -983,7 +983,12 @@ $GlpiInstallScriptBlock = {
     if (-not (Test-Path $TempDir)) { New-Item -ItemType Directory -Force -Path $TempDir | Out-Null }
     
     try {
-        $release = Invoke-RestMethod -Uri "https://api.github.com/repos/glpi-project/glpi-agent/releases/latest" -UseBasicParsing -ErrorAction Stop
+        $releaseUrl = if ($Arch -eq "x64") {
+            "https://api.github.com/repos/glpi-project/glpi-agent/releases/latest"
+        } else {
+            "https://api.github.com/repos/glpi-project/glpi-agent/releases/tags/1.7.3"
+        }
+        $release = Invoke-RestMethod -Uri $releaseUrl -UseBasicParsing -ErrorAction Stop
         $asset = $release.assets | Where-Object { $_.name -match "glpi-agent-.*-$Arch\.msi$" } | Select-Object -First 1
         if (-not $asset) { throw "MSI $Arch tidak ditemukan" }
         
