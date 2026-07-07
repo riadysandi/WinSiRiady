@@ -105,7 +105,7 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase, Sys
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="0" Text="   Cari: " Foreground="#585b70" VerticalAlignment="Center" FontSize="12"/>
-                        <TextBox Grid.Column="1" x:Name="TxtSearch" Background="Transparent" Foreground="#cdd6f4" BorderThickness="0" FontSize="13" Padding="0,8" VerticalAlignment="Center"/>
+                         <TextBox Grid.Column="1" x:Name="TxtSearch" Background="#181825" Foreground="#cdd6f4" CaretBrush="#cdd6f4" BorderThickness="0" FontSize="13" Padding="4,8" VerticalAlignment="Center"/>
                     </Grid>
                 </Border>
                 <!-- Target Folder -->
@@ -117,7 +117,7 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase, Sys
                     </Grid.ColumnDefinitions>
                     <TextBlock Grid.Column="0" Text="Folder Unduhan: " Foreground="#a6adc8" FontSize="12" VerticalAlignment="Center" Margin="0,0,6,0"/>
                     <Border Grid.Column="1" Background="#181825" CornerRadius="6" BorderBrush="#313244" BorderThickness="1">
-                        <TextBox x:Name="TxtTargetFolder" Text="C:\WinSiRiady" Background="Transparent" Foreground="#cdd6f4" BorderThickness="0" FontSize="12" Padding="8,6"/>
+                         <TextBox x:Name="TxtTargetFolder" Text="C:\WinSiRiady" Background="#181825" Foreground="#cdd6f4" CaretBrush="#cdd6f4" BorderThickness="0" FontSize="12" Padding="8,6"/>
                     </Border>
                     <Button Grid.Column="2" x:Name="BtnBrowse" Content="Browse..." Height="30" Margin="8,0,0,0" Background="#313244" Foreground="#cdd6f4" FontSize="12" BorderThickness="0" Padding="10,0"><Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources></Button>
                 </Grid>
@@ -237,7 +237,7 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase, Sys
                             
                             <TextBlock Text="Masukkan Nomor Asset (TAG):" Foreground="#a6adc8" FontSize="12" Margin="0,0,0,6"/>
                             <Border Background="#11111b" CornerRadius="6" BorderBrush="#313244" BorderThickness="1" Margin="0,0,0,18">
-                                <TextBox x:Name="TxtGlpiInstallTag" Background="Transparent" Foreground="#cdd6f4" BorderThickness="0" FontSize="13" Padding="10,8"/>
+                                 <TextBox x:Name="TxtGlpiInstallTag" Background="#11111b" Foreground="#cdd6f4" CaretBrush="#cdd6f4" BorderThickness="0" FontSize="13" Padding="10,8"/>
                             </Border>
                             
                             <Button x:Name="BtnGlpiInstall" Content="Mulai Instalasi" Height="38" Background="#89b4fa" Foreground="#11111b" FontWeight="Bold" BorderThickness="0">
@@ -259,7 +259,7 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase, Sys
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
                                 <Border Grid.Column="0" Background="#11111b" CornerRadius="6" BorderBrush="#313244" BorderThickness="1" Margin="0,0,8,0">
-                                    <TextBox x:Name="TxtGlpiCurrentTag" Background="Transparent" Foreground="#cdd6f4" BorderThickness="0" FontSize="13" Padding="10,8"/>
+                                     <TextBox x:Name="TxtGlpiCurrentTag" Background="#11111b" Foreground="#cdd6f4" CaretBrush="#cdd6f4" BorderThickness="0" FontSize="13" Padding="10,8"/>
                                 </Border>
                                 <Button Grid.Column="1" x:Name="BtnGlpiUpdateTag" Content="Update TAG" Height="36" Width="95" Background="#a6e3a1" Foreground="#11111b" FontWeight="Bold" BorderThickness="0">
                                     <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
