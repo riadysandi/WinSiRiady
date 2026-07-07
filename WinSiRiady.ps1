@@ -592,10 +592,23 @@ $InstallScriptBlock = {
     }
 
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-    $total = $appsToInstall.Count
+    
+    # Ratakan array jika bersarang (nested array)
+    $apps = @()
+    if ($appsToInstall -is [System.Collections.IList] -or $appsToInstall -is [Array]) {
+        if ($appsToInstall.Count -eq 1 -and ($appsToInstall[0] -is [System.Collections.IList] -or $appsToInstall[0] -is [Array])) {
+            $apps = @($appsToInstall[0])
+        } else {
+            $apps = @($appsToInstall)
+        }
+    } else {
+        $apps = @($appsToInstall)
+    }
+
+    $total = $apps.Count
 
     for ($i = 0; $i -lt $total; $i++) {
-        $app = $appsToInstall[$i]
+        $app = $apps[$i]
         $progLine = "[PROG]" + ($i+1).ToString() + ":" + $total.ToString() + ":" + $app.Name
         Write-Output $progLine
 
