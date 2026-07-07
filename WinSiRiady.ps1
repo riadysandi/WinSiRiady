@@ -1086,10 +1086,14 @@ $GlpiUninstallScriptBlock = {
             }
         }
         
-        # Hapus sisa folder jika ada
-        Write-Output "[*] Membersihkan sisa folder GLPI Agent..."
+        # Hapus sisa folder dan log jika ada
+        Write-Output "[*] Membersihkan sisa folder, log, dan cache GLPI Agent..."
         if (Test-Path "C:\Program Files\GLPI-Agent") {
             Remove-Item "C:\Program Files\GLPI-Agent" -Recurse -Force -ErrorAction SilentlyContinue
+        }
+        $progDataPath = Join-Path $env:ProgramData "GLPI-Agent"
+        if (Test-Path $progDataPath) {
+            Remove-Item $progDataPath -Recurse -Force -ErrorAction SilentlyContinue
         }
     } else {
         Write-Output "[-] GLPI Agent tidak ditemukan di registry sistem."
