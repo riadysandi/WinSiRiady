@@ -1039,11 +1039,14 @@ $GlpiDeployScriptBlock = {
     $glpiBat = "C:\Program Files\GLPI-Agent\glpi-agent.bat"
     if (Test-Path $glpiBat) {
         Write-Output "[*] Memulai sinkronisasi data inventory ke server GLPI..."
-        $proc = Start-Process -FilePath $glpiBat -ArgumentList "--force", "--logger=stderr" -NoNewWindow -PassThru -Wait
-        if ($proc.ExitCode -eq 0) {
+        # Jalankan secara langsung agar log pengiriman inventory ter-stream secara real-time ke layar
+        & $glpiBat --force --logger=stderr 2>&1 | ForEach-Object {
+            Write-Output $_
+        }
+        if ($LASTEXITCODE -eq 0) {
             Write-Output "[+] Deploy/Inventory berhasil dikirim."
         } else {
-            Write-Output "[-] Deploy/Inventory selesai dengan kode keluar: $($proc.ExitCode)"
+            Write-Output "[-] Deploy/Inventory selesai dengan kode keluar: $LASTEXITCODE"
         }
     } else {
         Write-Output "[-] Bat file GLPI Agent tidak ditemukan di C:\Program Files\GLPI-Agent"
