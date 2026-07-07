@@ -96,7 +96,7 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase, Sys
                 </StackPanel>
 
                 <!-- Footer -->
-                <TextBlock Grid.Row="2" Text="v1.0.0 — Stable" FontSize="11" Foreground="#585b70" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Grid.Row="2" Text="v1.0.0 - Stable | By Sandi Riady" FontSize="11" Foreground="#585b70" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Grid>
         </Border>
 
@@ -200,7 +200,8 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase, Sys
             <Grid x:Name="PanelAbout" Visibility="Collapsed">
                 <StackPanel Margin="5">
                     <TextBlock Text="Tentang WinSiRiady Utility" FontSize="20" FontWeight="Bold" Foreground="#cdd6f4" Margin="0,0,0,15"/>
-                    <TextBlock Text="Aplikasi ini dikembangkan untuk mengotomatiskan instalasi perangkat lunak dan konfigurasi Windows pasca instalasi ulang." Foreground="#a6adc8" FontSize="13" TextWrapping="Wrap" Margin="0,0,0,20"/>
+                    <TextBlock Text="Aplikasi ini dikembangkan untuk mengotomatiskan instalasi perangkat lunak dan konfigurasi Windows pasca instalasi ulang." Foreground="#a6adc8" FontSize="13" TextWrapping="Wrap" Margin="0,0,0,10"/>
+                    <TextBlock Text="Dibuat oleh: Sandi Riady" FontSize="13" FontWeight="SemiBold" Foreground="#a6e3a1" Margin="0,0,0,20"/>
                     
                     <TextBlock Text="Repositori GitHub:" FontSize="14" FontWeight="SemiBold" Foreground="#cdd6f4" Margin="0,0,0,5"/>
                     <TextBlock Text="https://github.com/riadysandi/WinSiRiady" Foreground="#f9e2af" FontSize="13" Margin="0,0,0,20"/>
