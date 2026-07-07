@@ -195,68 +195,88 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase, Sys
             <!-- PAGE 5: GLPI AGENT -->
             <Grid x:Name="PanelGlpi" Visibility="Collapsed">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/> <!-- Title -->
+                    <RowDefinition Height="Auto"/> <!-- Status Banner Card -->
+                    <RowDefinition Height="*"/>    <!-- 2 Columns Grid -->
+                    <RowDefinition Height="Auto"/> <!-- Progress Label -->
+                    <RowDefinition Height="Auto"/> <!-- Progress Bar -->
                 </Grid.RowDefinitions>
-                <TextBlock Grid.Row="0" Text="GLPI Agent Manager" FontSize="20" FontWeight="Bold" Foreground="#cdd6f4" Margin="0,0,0,5"/>
-                <TextBlock Grid.Row="1" x:Name="TxtGlpiStatus" Text="Status: Memeriksa..." Foreground="#a6adc8" FontSize="13" Margin="0,0,0,15"/>
                 
-                <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
-                    <StackPanel>
-                        <!-- BOX 1: INSTALASI -->
-                        <Border Background="#181825" CornerRadius="8" Padding="15" BorderBrush="#313244" BorderThickness="1" Margin="0,0,0,15">
-                            <StackPanel>
-                                <TextBlock Text="Instal Agent Baru" FontSize="14" FontWeight="Bold" Foreground="#89b4fa" Margin="0,0,0,10"/>
-                                <TextBlock Text="Masukkan Nomor Asset (TAG) untuk instalasi baru:" Foreground="#a6adc8" FontSize="12" Margin="0,0,0,5"/>
-                                <Grid Margin="0,0,0,10">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <Border Background="#11111b" CornerRadius="6" BorderBrush="#313244" BorderThickness="1">
-                                        <TextBox x:Name="TxtGlpiInstallTag" Background="Transparent" Foreground="#cdd6f4" BorderThickness="0" FontSize="13" Padding="8,6"/>
-                                    </Border>
-                                </Grid>
-                                <Button x:Name="BtnGlpiInstall" Content="Instal GLPI Agent" Height="35" Background="#89b4fa" Foreground="#11111b" FontWeight="Bold" BorderThickness="0">
+                <!-- Title -->
+                <TextBlock Grid.Row="0" Text="GLPI Agent Manager" FontSize="20" FontWeight="Bold" Foreground="#cdd6f4" Margin="0,0,0,15"/>
+                
+                <!-- Status Banner Card -->
+                <Border Grid.Row="1" x:Name="BorderGlpiStatusBanner" CornerRadius="8" Padding="15" Margin="0,0,0,20" BorderThickness="1">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock x:Name="TxtGlpiStatusIcon" Grid.Column="0" Text="&#x2713;" FontSize="24" FontWeight="Bold" Margin="0,0,15,0" VerticalAlignment="Center"/>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock x:Name="TxtGlpiStatusTitle" Text="Memeriksa Status..." FontSize="14" FontWeight="Bold" Foreground="#cdd6f4"/>
+                            <TextBlock x:Name="TxtGlpiStatusDesc" Text="Harap tunggu sebentar." FontSize="11" Foreground="#a6adc8" Margin="0,2,0,0"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+                
+                <!-- 2 Columns Content -->
+                <Grid Grid.Row="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="20"/> <!-- Gap -->
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <!-- BOX 1: INSTALASI (Kiri) -->
+                    <Border Grid.Column="0" Background="#181825" CornerRadius="10" Padding="20" BorderBrush="#313244" BorderThickness="1" VerticalAlignment="Top">
+                        <StackPanel>
+                            <TextBlock Text="Instal Agent Baru" FontSize="15" FontWeight="Bold" Foreground="#89b4fa" Margin="0,0,0,5"/>
+                            <TextBlock Text="Pasang agent baru jika belum terinstal di sistem." FontSize="11" Foreground="#585b70" Margin="0,0,0,15"/>
+                            
+                            <TextBlock Text="Masukkan Nomor Asset (TAG):" Foreground="#a6adc8" FontSize="12" Margin="0,0,0,6"/>
+                            <Border Background="#11111b" CornerRadius="6" BorderBrush="#313244" BorderThickness="1" Margin="0,0,0,18">
+                                <TextBox x:Name="TxtGlpiInstallTag" Background="Transparent" Foreground="#cdd6f4" BorderThickness="0" FontSize="13" Padding="10,8"/>
+                            </Border>
+                            
+                            <Button x:Name="BtnGlpiInstall" Content="Mulai Instalasi" Height="38" Background="#89b4fa" Foreground="#11111b" FontWeight="Bold" BorderThickness="0">
+                                <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                            </Button>
+                        </StackPanel>
+                    </Border>
+                    
+                    <!-- BOX 2: KELOLA & DEPLOY (Kanan) -->
+                    <Border Grid.Column="2" x:Name="BorderGlpiManage" Background="#181825" CornerRadius="10" Padding="20" BorderBrush="#313244" BorderThickness="1" VerticalAlignment="Top">
+                        <StackPanel>
+                            <TextBlock Text="Kelola &amp; Sinkronisasi" FontSize="15" FontWeight="Bold" Foreground="#a6e3a1" Margin="0,0,0,5"/>
+                            <TextBlock Text="Perbarui konfigurasi dan deploy data ke server GLPI." FontSize="11" Foreground="#585b70" Margin="0,0,0,15"/>
+                            
+                            <TextBlock Text="Ubah Nomor Asset (TAG):" Foreground="#a6adc8" FontSize="12" Margin="0,0,0,6"/>
+                            <Grid Margin="0,0,0,20">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <Border Grid.Column="0" Background="#11111b" CornerRadius="6" BorderBrush="#313244" BorderThickness="1" Margin="0,0,8,0">
+                                    <TextBox x:Name="TxtGlpiCurrentTag" Background="Transparent" Foreground="#cdd6f4" BorderThickness="0" FontSize="13" Padding="10,8"/>
+                                </Border>
+                                <Button Grid.Column="1" x:Name="BtnGlpiUpdateTag" Content="Update TAG" Height="36" Width="95" Background="#a6e3a1" Foreground="#11111b" FontWeight="Bold" BorderThickness="0">
                                     <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
                                 </Button>
-                            </StackPanel>
-                        </Border>
-
-                        <!-- BOX 2: KELOLA AGENT (HANYA AKTIF JIKA TERINSTAL) -->
-                        <Border x:Name="BorderGlpiManage" Background="#181825" CornerRadius="8" Padding="15" BorderBrush="#313244" BorderThickness="1">
-                            <StackPanel>
-                                <TextBlock Text="Kelola Agent Terinstal" FontSize="14" FontWeight="Bold" Foreground="#a6e3a1" Margin="0,0,0,10"/>
-                                
-                                <TextBlock Text="Ubah Asset TAG:" Foreground="#a6adc8" FontSize="12" Margin="0,0,0,5"/>
-                                <Grid Margin="0,0,0,10">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                    </Grid.ColumnDefinitions>
-                                    <Border Grid.Column="0" Background="#11111b" CornerRadius="6" BorderBrush="#313244" BorderThickness="1" Margin="0,0,8,0">
-                                        <TextBox x:Name="TxtGlpiCurrentTag" Background="Transparent" Foreground="#cdd6f4" BorderThickness="0" FontSize="13" Padding="8,6"/>
-                                    </Border>
-                                    <Button Grid.Column="1" x:Name="BtnGlpiUpdateTag" Content="Update TAG" Height="32" Width="100" Background="#a6e3a1" Foreground="#11111b" FontWeight="Bold" BorderThickness="0">
-                                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
-                                    </Button>
-                                </Grid>
-
-                                <Separator Background="#313244" Margin="0,10,0,15"/>
-
-                                <TextBlock Text="Kirim Data Inventory (Deploy ke GLPI):" Foreground="#a6adc8" FontSize="12" Margin="0,0,0,5"/>
-                                <Button x:Name="BtnGlpiDeploy" Content="Force Inventory (Deploy Sekarang)" Height="38" Background="#f9e2af" Foreground="#11111b" FontWeight="Bold" BorderThickness="0">
-                                    <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
-                                </Button>
-                            </StackPanel>
-                        </Border>
-                    </StackPanel>
-                </ScrollViewer>
+                            </Grid>
+                            
+                            <Separator Background="#313244" Margin="0,0,0,18"/>
+                            
+                            <TextBlock Text="Kirim Data Inventory (Deploy):" Foreground="#a6adc8" FontSize="12" Margin="0,0,0,6"/>
+                            <Button x:Name="BtnGlpiDeploy" Content="Deploy Sekarang (Force)" Height="38" Background="#f9e2af" Foreground="#11111b" FontWeight="Bold" BorderThickness="0">
+                                <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                            </Button>
+                        </StackPanel>
+                    </Border>
+                </Grid>
 
                 <!-- Progress Label -->
-                <TextBlock Grid.Row="3" x:Name="TxtGlpiProgressLabel" Text="" Foreground="#a6adc8" FontSize="12" Margin="0,0,0,5" Visibility="Collapsed"/>
+                <TextBlock Grid.Row="3" x:Name="TxtGlpiProgressLabel" Text="" Foreground="#a6adc8" FontSize="12" Margin="0,15,0,5" Visibility="Collapsed"/>
                 <!-- Progress Bar -->
                 <ProgressBar Grid.Row="4" x:Name="PrgGlpi" Height="8" Minimum="0" Maximum="100" Value="0" Background="#313244" Foreground="#89b4fa" BorderThickness="0" Visibility="Collapsed" Margin="0,0,0,10"/>
             </Grid>
@@ -322,7 +342,10 @@ $ChkDarkTheme        = $Window.FindName("ChkDarkTheme")
 
 $BtnNavGlpi          = $Window.FindName("BtnNavGlpi")
 $PanelGlpi           = $Window.FindName("PanelGlpi")
-$TxtGlpiStatus       = $Window.FindName("TxtGlpiStatus")
+$BorderGlpiStatusBanner = $Window.FindName("BorderGlpiStatusBanner")
+$TxtGlpiStatusIcon   = $Window.FindName("TxtGlpiStatusIcon")
+$TxtGlpiStatusTitle  = $Window.FindName("TxtGlpiStatusTitle")
+$TxtGlpiStatusDesc   = $Window.FindName("TxtGlpiStatusDesc")
 $TxtGlpiInstallTag   = $Window.FindName("TxtGlpiInstallTag")
 $BtnGlpiInstall      = $Window.FindName("BtnGlpiInstall")
 $BorderGlpiManage    = $Window.FindName("BorderGlpiManage")
@@ -407,8 +430,13 @@ function Update-GlpiStatus {
     }
 
     if ($glpiInstalled -or (Test-Path "C:\Program Files\GLPI-Agent\glpi-agent.bat")) {
-        $TxtGlpiStatus.Text = if ($currentTag) { "Status: GLPI Agent Terinstal (TAG: $currentTag)" } else { "Status: GLPI Agent Terinstal (TAG: Belum diset)" }
-        $TxtGlpiStatus.Foreground = New-Brush "#a6e3a1" # Green
+        $BorderGlpiStatusBanner.Background = New-Brush "#1a3a2a" # Dark Green
+        $BorderGlpiStatusBanner.BorderBrush = New-Brush "#a6e3a1" # Light Green
+        $TxtGlpiStatusIcon.Text = "✓"
+        $TxtGlpiStatusIcon.Foreground = New-Brush "#a6e3a1"
+        $TxtGlpiStatusTitle.Text = "GLPI Agent Aktif & Terinstal"
+        $TxtGlpiStatusTitle.Foreground = New-Brush "#a6e3a1"
+        $TxtGlpiStatusDesc.Text = if ($currentTag) { "Terhubung dengan Asset TAG: $currentTag. Service berjalan normal." } else { "Terinstal tetapi TAG belum diset. Silakan isi TAG di panel kanan." }
         
         # Disable installation
         $TxtGlpiInstallTag.IsEnabled = $false
@@ -423,8 +451,13 @@ function Update-GlpiStatus {
         # Set current tag text
         $TxtGlpiCurrentTag.Text = $currentTag
     } else {
-        $TxtGlpiStatus.Text = "Status: GLPI Agent BELUM Terinstal"
-        $TxtGlpiStatus.Foreground = New-Brush "#f38ba8" # Red
+        $BorderGlpiStatusBanner.Background = New-Brush "#3e2428" # Dark Red
+        $BorderGlpiStatusBanner.BorderBrush = New-Brush "#f38ba8" # Light Red
+        $TxtGlpiStatusIcon.Text = "!"
+        $TxtGlpiStatusIcon.Foreground = New-Brush "#f38ba8"
+        $TxtGlpiStatusTitle.Text = "GLPI Agent Belum Terpasang"
+        $TxtGlpiStatusTitle.Foreground = New-Brush "#f38ba8"
+        $TxtGlpiStatusDesc.Text = "Masukkan nomor Asset TAG di panel kiri untuk memulai proses instalasi agent baru."
         
         # Enable installation
         $TxtGlpiInstallTag.IsEnabled = $true
