@@ -76,10 +76,13 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase, Sys
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
-                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
                         <StackPanel x:Name="AppsContainer" Margin="5"/>
                     </ScrollViewer>
-                    <Button Grid.Row="1" x:Name="BtnInstallApps" Content="Instal Aplikasi Terpilih" Height="40" Background="#89b4fa" Foreground="#11111b" FontWeight="Bold" BorderThickness="0" Margin="0,10,0,0"/>
+                    <StackPanel Grid.Row="1" Margin="0,10,0,0">
+                        <ProgressBar x:Name="PrgInstall" Height="8" IsIndeterminate="False" Background="#313244" Foreground="#89b4fa" BorderThickness="0" Visibility="Collapsed" Margin="0,0,0,10"/>
+                        <Button x:Name="BtnInstallApps" Content="Instal Aplikasi Terpilih" Height="40" Background="#89b4fa" Foreground="#11111b" FontWeight="Bold" BorderThickness="0"/>
+                    </StackPanel>
                 </Grid>
             </TabItem>
 
@@ -90,14 +93,17 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase, Sys
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
-                    <StackPanel VerticalAlignment="Top" Margin="5">
+                    <StackPanel Grid.Row="0" VerticalAlignment="Top" Margin="5">
                         <TextBlock Text="Pilih Tweak Optimasi Windows:" FontSize="16" FontWeight="Bold" Foreground="#cdd6f4" Margin="0,0,0,15"/>
                         <CheckBox x:Name="ChkTelemetry" Content="Matikan Telemetri &amp; Diagnostik (Meningkatkan Privasi)" Foreground="#cdd6f4" FontSize="13" Margin="0,0,0,10" IsChecked="True"/>
                         <CheckBox x:Name="ChkCortana" Content="Nonaktifkan Cortana (Menghemat RAM)" Foreground="#cdd6f4" FontSize="13" Margin="0,0,0,10" IsChecked="True"/>
                         <CheckBox x:Name="ChkBloatware" Content="Hapus Aplikasi Bawaan (Bloatware Windows)" Foreground="#cdd6f4" FontSize="13" Margin="0,0,0,10" IsChecked="False"/>
                         <CheckBox x:Name="ChkDarkTheme" Content="Aktifkan Tema Gelap (Dark Mode)" Foreground="#cdd6f4" FontSize="13" Margin="0,0,0,10" IsChecked="True"/>
                     </StackPanel>
-                    <Button Grid.Row="1" x:Name="BtnApplyTweaks" Content="Jalankan Optimasi Terpilih" Height="40" Background="#a6e3a1" Foreground="#11111b" FontWeight="Bold" BorderThickness="0" Margin="0,10,0,0"/>
+                    <StackPanel Grid.Row="1" Margin="0,10,0,0">
+                        <ProgressBar x:Name="PrgTweaks" Height="8" IsIndeterminate="False" Background="#313244" Foreground="#a6e3a1" BorderThickness="0" Visibility="Collapsed" Margin="0,0,0,10"/>
+                        <Button x:Name="BtnApplyTweaks" Content="Jalankan Optimasi Terpilih" Height="40" Background="#a6e3a1" Foreground="#11111b" FontWeight="Bold" BorderThickness="0"/>
+                    </StackPanel>
                 </Grid>
             </TabItem>
 
@@ -142,6 +148,8 @@ $ChkTelemetry   = $Window.FindName("ChkTelemetry")
 $ChkCortana     = $Window.FindName("ChkCortana")
 $ChkBloatware   = $Window.FindName("ChkBloatware")
 $ChkDarkTheme   = $Window.FindName("ChkDarkTheme")
+$PrgInstall     = $Window.FindName("PrgInstall")
+$PrgTweaks      = $Window.FindName("PrgTweaks")
 
 # === STEP 7: HELPER FUNCTION LOG ===
 function Write-GuiLog {
@@ -251,6 +259,13 @@ $Global:MonitorTimer.Add_Tick({
             $Global:Job = $null
             $BtnInstallApps.IsEnabled = $true
             $BtnApplyTweaks.IsEnabled = $true
+            
+            # Sembunyikan ProgressBar
+            $PrgInstall.Visibility = [System.Windows.Visibility]::Collapsed
+            $PrgInstall.IsIndeterminate = $false
+            $PrgTweaks.Visibility = [System.Windows.Visibility]::Collapsed
+            $PrgTweaks.IsIndeterminate = $false
+
             Write-GuiLog "[+] Operasi selesai."
         }
     }
@@ -272,6 +287,11 @@ $BtnInstallApps.Add_Click({
 
     $BtnInstallApps.IsEnabled = $false
     $BtnApplyTweaks.IsEnabled = $false
+    
+    # Tampilkan ProgressBar Instalasi
+    $PrgInstall.Visibility = [System.Windows.Visibility]::Visible
+    $PrgInstall.IsIndeterminate = $true
+
     Write-GuiLog "[*] Memulai instalasi $($selectedApps.Count) aplikasi..."
 
     $InstallBlock = {
@@ -387,6 +407,11 @@ $BtnApplyTweaks.Add_Click({
 
     $BtnInstallApps.IsEnabled = $false
     $BtnApplyTweaks.IsEnabled = $false
+    
+    # Tampilkan ProgressBar Optimasi
+    $PrgTweaks.Visibility = [System.Windows.Visibility]::Visible
+    $PrgTweaks.IsIndeterminate = $true
+
     Write-GuiLog "[*] Menjalankan optimasi sistem..."
 
     $TweaksBlock = {
