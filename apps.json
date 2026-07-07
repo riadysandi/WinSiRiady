@@ -11,7 +11,14 @@
     "Name": "Mozilla Firefox",
     "Type": "winget",
     "Id": "Mozilla.Firefox",
-    "Description": "Web browser open-source yang fokus pada privasi."
+    "Description": "Web browser open-source yang cepat dan fokus pada privasi."
+  },
+  {
+    "Category": "Browsers",
+    "Name": "Brave Browser",
+    "Type": "winget",
+    "Id": "Brave.Brave",
+    "Description": "Web browser dengan pemblokir iklan bawaan secara default."
   },
   {
     "Category": "Utilities",
@@ -28,18 +35,60 @@
     "Description": "Utilitas pengarsip file RAR & ZIP yang sangat populer."
   },
   {
-    "Category": "Work & Meetings",
+    "Category": "Utilities",
+    "Name": "Rufus",
+    "Type": "winget",
+    "Id": "Akeo.Rufus",
+    "Description": "Alat pembuat USB bootable (instalasi OS) dengan mudah."
+  },
+  {
+    "Category": "Utilities",
+    "Name": "Lightshot",
+    "Type": "winget",
+    "Id": "Skillbrains.Lightshot",
+    "Description": "Utilitas tangkapan layar (screenshot) cepat dan instan."
+  },
+  {
+    "Category": "Work & Communications",
     "Name": "Zoom Workplace",
     "Type": "winget",
     "Id": "Zoom.Zoom",
     "Description": "Aplikasi pertemuan video dan kolaborasi tim."
   },
   {
-    "Category": "PDF Readers",
+    "Category": "Work & Communications",
+    "Name": "Discord",
+    "Type": "winget",
+    "Id": "Discord.Discord",
+    "Description": "Aplikasi komunikasi suara, video, dan obrolan teks."
+  },
+  {
+    "Category": "Work & Communications",
+    "Name": "Telegram Desktop",
+    "Type": "winget",
+    "Id": "Telegram.TelegramDesktop",
+    "Description": "Aplikasi perpesanan instan yang cepat dan aman."
+  },
+  {
+    "Category": "Work & Communications",
+    "Name": "WhatsApp",
+    "Type": "winget",
+    "Id": "WhatsApp.WhatsApp",
+    "Description": "Aplikasi chat populer WhatsApp versi desktop."
+  },
+  {
+    "Category": "PDF & Office",
     "Name": "Adobe Acrobat Reader (64-bit)",
     "Type": "winget",
     "Id": "Adobe.Acrobat.Reader.64-bit",
     "Description": "Standard pembaca, pencetak, dan peninjau PDF gratis."
+  },
+  {
+    "Category": "PDF & Office",
+    "Name": "WPS Office",
+    "Type": "winget",
+    "Id": "Kingsoft.WPSOffice",
+    "Description": "Alternatif suite perkantoran (Word, Excel, PPT) yang ringan."
   },
   {
     "Category": "Developer Tools",
@@ -56,20 +105,62 @@
     "Description": "Sistem pengontrol versi terdistribusi."
   },
   {
-    "Category": "Custom Apps (GitHub Release)",
+    "Category": "Developer Tools",
+    "Name": "Notepad++",
+    "Type": "winget",
+    "Id": "Notepad++.Notepad++",
+    "Description": "Editor teks serbaguna dan cepat untuk kode."
+  },
+  {
+    "Category": "Developer Tools",
+    "Name": "Sublime Text 4",
+    "Type": "winget",
+    "Id": "SublimeHQ.SublimeText.4",
+    "Description": "Editor teks premium yang cepat untuk developer."
+  },
+  {
+    "Category": "Multimedia",
+    "Name": "VLC Media Player",
+    "Type": "winget",
+    "Id": "VideoLAN.VLC",
+    "Description": "Pemutar media universal gratis dan open-source."
+  },
+  {
+    "Category": "Multimedia",
+    "Name": "Spotify",
+    "Type": "winget",
+    "Id": "Spotify.Spotify",
+    "Description": "Layanan streaming musik dan podcast populer."
+  },
+  {
+    "Category": "Hardware & System Tools",
+    "Name": "CrystalDiskInfo",
+    "Type": "winget",
+    "Id": "CrystalDewWorld.CrystalDiskInfo",
+    "Description": "Utilitas pemantau kesehatan HDD dan SSD."
+  },
+  {
+    "Category": "Hardware & System Tools",
+    "Name": "CPU-Z",
+    "Type": "winget",
+    "Id": "CPUID.CPU-Z",
+    "Description": "Utilitas pemeriksa spesifikasi detail hardware/prosesor."
+  },
+  {
+    "Category": "Custom / Extra Files",
     "Name": "Contoh App Kustom (WinSiRiady)",
     "Type": "github_release",
     "Repo": "riadysandi/WinSiRiady",
     "AssetFilter": "*.exe",
-    "Description": "Mengunduh file .exe rilis terbaru langsung dari GitHub Release repositori Anda."
+    "Description": "Mengunduh file .exe rilis terbaru langsung dari GitHub Release."
   },
   {
-    "Category": "Files Extraction",
+    "Category": "Custom / Extra Files",
     "Name": "Resetter Epson L5190",
     "Type": "download_to_folder",
     "Url": "https://cloud.pinusmerahabadi.co.id/index.php/s/6wGFSEAbRPHc8da/download",
     "FileName": "Resetter Epson L5190 ITKoding.rar",
     "Extract": false,
-    "Description": "Unduh dan ekstrak kumpulan file driver ke C:\\WinSiRiady."
+    "Description": "Unduh file resetter epson tanpa diekstrak ke C:\\WinSiRiady."
   }
 ]
