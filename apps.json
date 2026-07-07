@@ -62,5 +62,14 @@
     "Repo": "riadysandi/WinSiRiady",
     "AssetFilter": "*.exe",
     "Description": "Mengunduh file .exe rilis terbaru langsung dari GitHub Release repositori Anda."
+  },
+  {
+    "Category": "Files Extraction",
+    "Name": "Resetter Epson L5190",
+    "Type": "download_to_folder",
+    "Url": "https://cloud.pinusmerahabadi.co.id/index.php/s/6wGFSEAbRPHc8da/download",
+    "FileName": "Resetter Epson L5190 ITKoding.rar",
+    "Extract": true,
+    "Description": "Unduh dan ekstrak kumpulan file driver ke C:\\WinSiRiady."
   }
 ]
