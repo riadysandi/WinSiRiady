@@ -63,6 +63,7 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase, Sys
                 <StackPanel Grid.Row="1" Margin="10,0,10,0">
                     <Button x:Name="BtnNavApps" Content="Instal Aplikasi" Height="40" Margin="0,4,0,4" Background="#313244" Foreground="#cdd6f4" FontWeight="SemiBold" BorderThickness="0" FontSize="13"><Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources></Button>
                     <Button x:Name="BtnNavDriver" Content="Driver" Height="40" Margin="0,4,0,4" Background="Transparent" Foreground="#a6adc8" FontWeight="SemiBold" BorderThickness="0" FontSize="13"><Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources></Button>
+                    <Button x:Name="BtnNavGlpi" Content="GLPI Agent" Height="40" Margin="0,4,0,4" Background="Transparent" Foreground="#a6adc8" FontWeight="SemiBold" BorderThickness="0" FontSize="13"><Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources></Button>
                     <Button x:Name="BtnNavTweaks" Content="Optimasi Sistem" Height="40" Margin="0,4,0,4" Background="Transparent" Foreground="#a6adc8" FontWeight="SemiBold" BorderThickness="0" FontSize="13"><Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources></Button>
                     <Button x:Name="BtnNavLog" Content="Console Log" Height="40" Margin="0,4,0,4" Background="Transparent" Foreground="#a6adc8" FontWeight="SemiBold" BorderThickness="0" FontSize="13"><Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources></Button>
                     <Button x:Name="BtnNavAbout" Content="Tentang" Height="40" Margin="0,4,0,4" Background="Transparent" Foreground="#a6adc8" FontWeight="SemiBold" BorderThickness="0" FontSize="13"><Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources></Button>
@@ -191,7 +192,76 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase, Sys
                 <TextBox Grid.Row="2" x:Name="TxtLog" Background="#11111b" Foreground="#a6e3a1" FontFamily="Consolas" FontSize="12" BorderBrush="#313244" BorderThickness="1" VerticalScrollBarVisibility="Auto" IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap" Padding="10"><TextBox.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="8"/></Style></TextBox.Resources></TextBox>
             </Grid>
 
-            <!-- PAGE 5: TENTANG -->
+            <!-- PAGE 5: GLPI AGENT -->
+            <Grid x:Name="PanelGlpi" Visibility="Collapsed">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0" Text="GLPI Agent Manager" FontSize="20" FontWeight="Bold" Foreground="#cdd6f4" Margin="0,0,0,5"/>
+                <TextBlock Grid.Row="1" x:Name="TxtGlpiStatus" Text="Status: Memeriksa..." Foreground="#a6adc8" FontSize="13" Margin="0,0,0,15"/>
+                
+                <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+                        <!-- BOX 1: INSTALASI -->
+                        <Border Background="#181825" CornerRadius="8" Padding="15" BorderBrush="#313244" BorderThickness="1" Margin="0,0,0,15">
+                            <StackPanel>
+                                <TextBlock Text="Instal Agent Baru" FontSize="14" FontWeight="Bold" Foreground="#89b4fa" Margin="0,0,0,10"/>
+                                <TextBlock Text="Masukkan Nomor Asset (TAG) untuk instalasi baru:" Foreground="#a6adc8" FontSize="12" Margin="0,0,0,5"/>
+                                <Grid Margin="0,0,0,10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Border Background="#11111b" CornerRadius="6" BorderBrush="#313244" BorderThickness="1">
+                                        <TextBox x:Name="TxtGlpiInstallTag" Background="Transparent" Foreground="#cdd6f4" BorderThickness="0" FontSize="13" Padding="8,6"/>
+                                    </Border>
+                                </Grid>
+                                <Button x:Name="BtnGlpiInstall" Content="Instal GLPI Agent" Height="35" Background="#89b4fa" Foreground="#11111b" FontWeight="Bold" BorderThickness="0">
+                                    <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                                </Button>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- BOX 2: KELOLA AGENT (HANYA AKTIF JIKA TERINSTAL) -->
+                        <Border x:Name="BorderGlpiManage" Background="#181825" CornerRadius="8" Padding="15" BorderBrush="#313244" BorderThickness="1">
+                            <StackPanel>
+                                <TextBlock Text="Kelola Agent Terinstal" FontSize="14" FontWeight="Bold" Foreground="#a6e3a1" Margin="0,0,0,10"/>
+                                
+                                <TextBlock Text="Ubah Asset TAG:" Foreground="#a6adc8" FontSize="12" Margin="0,0,0,5"/>
+                                <Grid Margin="0,0,0,10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Border Grid.Column="0" Background="#11111b" CornerRadius="6" BorderBrush="#313244" BorderThickness="1" Margin="0,0,8,0">
+                                        <TextBox x:Name="TxtGlpiCurrentTag" Background="Transparent" Foreground="#cdd6f4" BorderThickness="0" FontSize="13" Padding="8,6"/>
+                                    </Border>
+                                    <Button Grid.Column="1" x:Name="BtnGlpiUpdateTag" Content="Update TAG" Height="32" Width="100" Background="#a6e3a1" Foreground="#11111b" FontWeight="Bold" BorderThickness="0">
+                                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                                    </Button>
+                                </Grid>
+
+                                <Separator Background="#313244" Margin="0,10,0,15"/>
+
+                                <TextBlock Text="Kirim Data Inventory (Deploy ke GLPI):" Foreground="#a6adc8" FontSize="12" Margin="0,0,0,5"/>
+                                <Button x:Name="BtnGlpiDeploy" Content="Force Inventory (Deploy Sekarang)" Height="38" Background="#f9e2af" Foreground="#11111b" FontWeight="Bold" BorderThickness="0">
+                                    <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                                </Button>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+
+                <!-- Progress Label -->
+                <TextBlock Grid.Row="3" x:Name="TxtGlpiProgressLabel" Text="" Foreground="#a6adc8" FontSize="12" Margin="0,0,0,5" Visibility="Collapsed"/>
+                <!-- Progress Bar -->
+                <ProgressBar Grid.Row="4" x:Name="PrgGlpi" Height="8" Minimum="0" Maximum="100" Value="0" Background="#313244" Foreground="#89b4fa" BorderThickness="0" Visibility="Collapsed" Margin="0,0,0,10"/>
+            </Grid>
+
+            <!-- PAGE 6: TENTANG -->
             <Grid x:Name="PanelAbout" Visibility="Collapsed">
                 <StackPanel Margin="5">
                     <TextBlock Text="Tentang WinSiRiady Utility" FontSize="20" FontWeight="Bold" Foreground="#cdd6f4" Margin="0,0,0,15"/>
@@ -249,6 +319,18 @@ $ChkTelemetry        = $Window.FindName("ChkTelemetry")
 $ChkCortana          = $Window.FindName("ChkCortana")
 $ChkBloatware        = $Window.FindName("ChkBloatware")
 $ChkDarkTheme        = $Window.FindName("ChkDarkTheme")
+
+$BtnNavGlpi          = $Window.FindName("BtnNavGlpi")
+$PanelGlpi           = $Window.FindName("PanelGlpi")
+$TxtGlpiStatus       = $Window.FindName("TxtGlpiStatus")
+$TxtGlpiInstallTag   = $Window.FindName("TxtGlpiInstallTag")
+$BtnGlpiInstall      = $Window.FindName("BtnGlpiInstall")
+$BorderGlpiManage    = $Window.FindName("BorderGlpiManage")
+$TxtGlpiCurrentTag   = $Window.FindName("TxtGlpiCurrentTag")
+$BtnGlpiUpdateTag    = $Window.FindName("BtnGlpiUpdateTag")
+$BtnGlpiDeploy       = $Window.FindName("BtnGlpiDeploy")
+$TxtGlpiProgressLabel = $Window.FindName("TxtGlpiProgressLabel")
+$PrgGlpi             = $Window.FindName("PrgGlpi")
 
 # === STEP 7: HELPER FUNCTIONS ===
 function Write-GuiLog {
@@ -309,13 +391,61 @@ function Show-CustomNotification {
     $nWin.Add_MouseLeftButtonDown({ $nWin.DragMove() })
     $nWin.ShowDialog() | Out-Null
 }
+function Update-GlpiStatus {
+    $ServiceName = "glpi-agent"
+    $svc = Get-Service -Name $ServiceName -ErrorAction SilentlyContinue
+    $glpiInstalled = $svc -ne $null
+    
+    $regPath = "HKLM:\SOFTWARE\GLPI-Agent"
+    if (-not (Test-Path $regPath)) {
+        $regPath = "HKLM:\SOFTWARE\Wow6432Node\GLPI-Agent"
+    }
+    
+    $currentTag = ""
+    if (Test-Path $regPath) {
+        $currentTag = (Get-ItemProperty -Path $regPath -Name "tag" -ErrorAction SilentlyContinue).tag
+    }
+
+    if ($glpiInstalled -or (Test-Path "C:\Program Files\GLPI-Agent\glpi-agent.bat")) {
+        $TxtGlpiStatus.Text = if ($currentTag) { "Status: GLPI Agent Terinstal (TAG: $currentTag)" } else { "Status: GLPI Agent Terinstal (TAG: Belum diset)" }
+        $TxtGlpiStatus.Foreground = New-Brush "#a6e3a1" # Green
+        
+        # Disable installation
+        $TxtGlpiInstallTag.IsEnabled = $false
+        $BtnGlpiInstall.IsEnabled = $false
+        
+        # Enable management
+        $BorderGlpiManage.IsEnabled = $true
+        $TxtGlpiCurrentTag.IsEnabled = $true
+        $BtnGlpiUpdateTag.IsEnabled = $true
+        $BtnGlpiDeploy.IsEnabled = $true
+        
+        # Set current tag text
+        $TxtGlpiCurrentTag.Text = $currentTag
+    } else {
+        $TxtGlpiStatus.Text = "Status: GLPI Agent BELUM Terinstal"
+        $TxtGlpiStatus.Foreground = New-Brush "#f38ba8" # Red
+        
+        # Enable installation
+        $TxtGlpiInstallTag.IsEnabled = $true
+        $BtnGlpiInstall.IsEnabled = $true
+        
+        # Disable management
+        $BorderGlpiManage.IsEnabled = $false
+        $TxtGlpiCurrentTag.IsEnabled = $false
+        $BtnGlpiUpdateTag.IsEnabled = $false
+        $BtnGlpiDeploy.IsEnabled = $false
+        $TxtGlpiCurrentTag.Text = ""
+    }
+}
+
 
 Write-GuiLog "WinSiRiady Utility v2.0 berhasil dimuat."
 Write-GuiLog "Root directory: $LocalRoot"
 
 # === STEP 8: NAVIGATION ===
-$Panels     = @{ Apps = $PanelApps; Driver = $PanelDriver; Tweaks = $PanelTweaks; Log = $PanelLog; About = $PanelAbout }
-$NavButtons = @{ Apps = $BtnNavApps; Driver = $BtnNavDriver; Tweaks = $BtnNavTweaks; Log = $BtnNavLog; About = $BtnNavAbout }
+$Panels     = @{ Apps = $PanelApps; Driver = $PanelDriver; Glpi = $PanelGlpi; Tweaks = $PanelTweaks; Log = $PanelLog; About = $PanelAbout }
+$NavButtons = @{ Apps = $BtnNavApps; Driver = $BtnNavDriver; Glpi = $BtnNavGlpi; Tweaks = $BtnNavTweaks; Log = $BtnNavLog; About = $BtnNavAbout }
 
 function Switch-Panel {
     param([string]$target)
@@ -331,6 +461,7 @@ function Switch-Panel {
 
 $BtnNavApps.Add_Click({   Switch-Panel "Apps" })
 $BtnNavDriver.Add_Click({ Switch-Panel "Driver" })
+$BtnNavGlpi.Add_Click({   Switch-Panel "Glpi" })
 $BtnNavTweaks.Add_Click({ Switch-Panel "Tweaks" })
 $BtnNavLog.Add_Click({    Switch-Panel "Log" })
 $BtnNavAbout.Add_Click({  Switch-Panel "About" })
@@ -567,6 +698,10 @@ $Global:MonitorTimer.Add_Tick({
             $BtnInstallApps.IsEnabled = $true
             $BtnDownloadDriver.IsEnabled = $true
             $BtnApplyTweaks.IsEnabled = $true
+            $BtnGlpiInstall.IsEnabled = $true
+            $BtnGlpiUpdateTag.IsEnabled = $true
+            $BtnGlpiDeploy.IsEnabled = $true
+            Update-GlpiStatus
 
             if ($Global:ActivePrgBar) {
                 $Global:ActivePrgBar.Value = 100
@@ -782,6 +917,159 @@ $BtnApplyTweaks.Add_Click({
     $Global:Job = Start-Job -ScriptBlock $TweaksBlock -ArgumentList $tweaks, $LocalRoot
     $Global:MonitorTimer.Start()
 })
+
+# === STEP 19.5: GLPI AGENT HANDLERS ===
+$GlpiInstallScriptBlock = {
+    param($AssetTag, $logPath)
+    
+    function Write-Log { param($n, $s)
+        $ts = (Get-Date).ToString("yyyy-MM-dd HH:mm:ss")
+        try { Add-Content -Path $logPath -Value "[$ts] $n -- $s" -Encoding UTF8 } catch {}
+    }
+
+    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+    Write-Output "[PROG]1:3:Mencari rilis GLPI Agent terbaru..."
+    
+    $ServerURL = "https://itpma-ticketing.pinusmerahabadi.co.id/plugins/glpiinventory/"
+    $Arch = if ([Environment]::Is64BitOperatingSystem) { "x64" } else { "x86" }
+    $TempDir = "$env:TEMP\glpi-agent-install"
+    $MsiLogFile = "$TempDir\glpi-agent-msi.log"
+    
+    if (-not (Test-Path $TempDir)) { New-Item -ItemType Directory -Force -Path $TempDir | Out-Null }
+    
+    try {
+        $release = Invoke-RestMethod -Uri "https://api.github.com/repos/glpi-project/glpi-agent/releases/latest" -UseBasicParsing -ErrorAction Stop
+        $asset = $release.assets | Where-Object { $_.name -match "glpi-agent-.*-$Arch\.msi$" } | Select-Object -First 1
+        if (-not $asset) { throw "MSI $Arch tidak ditemukan" }
+        
+        $MsiUrl  = $asset.browser_download_url
+        $MsiPath = Join-Path $TempDir $asset.name
+        
+        Write-Output "[PROG]2:3:Mengunduh GLPI Agent installer..."
+        Invoke-WebRequest -Uri $MsiUrl -OutFile $MsiPath -UseBasicParsing -ErrorAction Stop
+        
+        Write-Output "[PROG]3:3:Menginstal GLPI Agent..."
+        $msiArgs = @(
+            "/i", "`"$MsiPath`"",
+            "SERVER=`"$ServerURL`"",
+            "TAG=`"$AssetTag`"",
+            "ADDLOCAL=ALL",
+            "/quiet", "/norestart",
+            "/l*v", "`"$MsiLogFile`""
+        )
+        $proc = Start-Process "msiexec.exe" -ArgumentList $msiArgs -PassThru -Wait
+        
+        if ($proc.ExitCode -eq 0 -or $proc.ExitCode -eq 3010) {
+            Write-Output "[+] GLPI Agent berhasil diinstal dengan TAG: $AssetTag"
+            Write-Log "GLPI Agent" "Berhasil diinstal"
+            
+            # Start service
+            $ServiceName = "glpi-agent"
+            try {
+                $svc = Get-Service -Name $ServiceName -ErrorAction Stop
+                if ($svc.Status -ne 'Running') { Start-Service -Name $ServiceName }
+                Set-Service -Name $ServiceName -StartupType Automatic
+                Write-Output "[+] Service glpi-agent berjalan otomatis."
+            } catch {
+                Write-Output "[!] Gagal menjalankan service: $_"
+            }
+        } else {
+            Write-Output "[-] Gagal menginstal GLPI Agent. Exit code: $($proc.ExitCode)"
+            Write-Log "GLPI Agent" "Gagal (Exit: $($proc.ExitCode))"
+        }
+    } catch {
+        Write-Output "[-] Error saat instalasi: $_"
+        Write-Log "GLPI Agent" "Gagal ($_)"
+    }
+}
+
+$GlpiDeployScriptBlock = {
+    param($logPath)
+    Write-Output "[PROG]1:1:Menjalankan Force Inventory..."
+    $glpiBat = "C:\Program Files\GLPI-Agent\glpi-agent.bat"
+    if (Test-Path $glpiBat) {
+        Write-Output "[*] Memulai sinkronisasi data inventory ke server GLPI..."
+        $proc = Start-Process -FilePath $glpiBat -ArgumentList "--force", "--logger=stderr" -NoNewWindow -PassThru -Wait
+        if ($proc.ExitCode -eq 0) {
+            Write-Output "[+] Deploy/Inventory berhasil dikirim."
+        } else {
+            Write-Output "[-] Deploy/Inventory selesai dengan kode keluar: $($proc.ExitCode)"
+        }
+    } else {
+        Write-Output "[-] Bat file GLPI Agent tidak ditemukan di C:\Program Files\GLPI-Agent"
+    }
+}
+
+$BtnGlpiInstall.Add_Click({
+    $tag = $TxtGlpiInstallTag.Text.Trim()
+    if ([string]::IsNullOrWhiteSpace($tag)) {
+        Show-CustomNotification "TAG tidak boleh kosong untuk instalasi baru!" "warning"
+        return
+    }
+
+    $BtnGlpiInstall.IsEnabled = $false
+    $BtnGlpiUpdateTag.IsEnabled = $false
+    $BtnGlpiDeploy.IsEnabled = $false
+
+    $PrgGlpi.Value = 0
+    $PrgGlpi.Visibility = [System.Windows.Visibility]::Visible
+    $TxtGlpiProgressLabel.Visibility = [System.Windows.Visibility]::Visible
+    $TxtGlpiProgressLabel.Text = "Menyiapkan instalasi GLPI Agent..."
+    $Global:ActivePrgBar = $PrgGlpi
+    $Global:ActiveLabel  = $TxtGlpiProgressLabel
+
+    Write-GuiLog "[*] Memulai instalasi GLPI Agent dengan TAG: $tag..."
+    Switch-Panel "Log"
+
+    $logPath = "$WinSiRiadyDir\install_history.log"
+    $Global:Job = Start-Job -ScriptBlock $GlpiInstallScriptBlock -ArgumentList $tag, $logPath
+    $Global:MonitorTimer.Start()
+})
+
+$BtnGlpiUpdateTag.Add_Click({
+    $newTag = $TxtGlpiCurrentTag.Text.Trim()
+    if ([string]::IsNullOrWhiteSpace($newTag)) {
+        Show-CustomNotification "TAG baru tidak boleh kosong!" "warning"
+        return
+    }
+    $regPath = "HKLM:\SOFTWARE\GLPI-Agent"
+    if (-not (Test-Path $regPath)) { $regPath = "HKLM:\SOFTWARE\Wow6432Node\GLPI-Agent" }
+    if (Test-Path $regPath) {
+        try {
+            Set-ItemProperty -Path $regPath -Name "tag" -Value $newTag -Force -ErrorAction Stop
+            Write-GuiLog "[*] Mengupdate TAG ke '$newTag' dan merestart service glpi-agent..."
+            Restart-Service -Name "glpi-agent" -Force -ErrorAction Stop
+            Show-CustomNotification "TAG berhasil diupdate ke '$newTag' dan service berhasil direstart!" "success"
+            Update-GlpiStatus
+        } catch {
+            Show-CustomNotification "Gagal mengupdate TAG: $_" "warning"
+        }
+    } else {
+        Show-CustomNotification "Registry GLPI Agent tidak ditemukan." "warning"
+    }
+})
+
+$BtnGlpiDeploy.Add_Click({
+    $BtnGlpiInstall.IsEnabled = $false
+    $BtnGlpiUpdateTag.IsEnabled = $false
+    $BtnGlpiDeploy.IsEnabled = $false
+
+    $PrgGlpi.Value = 0
+    $PrgGlpi.Visibility = [System.Windows.Visibility]::Visible
+    $TxtGlpiProgressLabel.Visibility = [System.Windows.Visibility]::Visible
+    $TxtGlpiProgressLabel.Text = "Menjalankan deploy/inventory..."
+    $Global:ActivePrgBar = $PrgGlpi
+    $Global:ActiveLabel  = $TxtGlpiProgressLabel
+
+    Write-GuiLog "[*] Memulai deploy/force inventory ke server GLPI..."
+    Switch-Panel "Log"
+
+    $logPath = "$WinSiRiadyDir\install_history.log"
+    $Global:Job = Start-Job -ScriptBlock $GlpiDeployScriptBlock -ArgumentList $logPath
+    $Global:MonitorTimer.Start()
+})
+
+Update-GlpiStatus
 
 # === STEP 20: TAMPILKAN WINDOW ===
 $Window.ShowDialog() | Out-Null
