@@ -1003,6 +1003,7 @@ $GlpiInstallScriptBlock = {
             "/i", "`"$MsiPath`"",
             "SERVER=`"$ServerURL`"",
             "TAG=`"$AssetTag`"",
+            "NO_SSL_CHECK=1",
             "ADDLOCAL=ALL",
             "/quiet", "/norestart",
             "/l*v", "`"$MsiLogFile`""
@@ -1040,7 +1041,7 @@ $GlpiDeployScriptBlock = {
     if (Test-Path $glpiBat) {
         Write-Output "[*] Memulai sinkronisasi data inventory ke server GLPI..."
         # Jalankan secara langsung agar log pengiriman inventory ter-stream secara real-time ke layar
-        & $glpiBat --force --logger=stderr 2>&1 | ForEach-Object {
+        & $glpiBat --force --no-ssl-check --logger=stderr 2>&1 | ForEach-Object {
             Write-Output $_
         }
         if ($LASTEXITCODE -eq 0) {
