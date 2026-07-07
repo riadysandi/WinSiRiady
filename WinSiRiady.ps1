@@ -262,6 +262,57 @@ function New-Brush {
     return $brush
 }
 
+# Fungsi notifikasi kustom bertema gelap dengan sudut melengkung dan mendukung DragMove
+function Show-CustomNotification {
+    param(
+        [string]$message,
+        [string]$icon = "✓",
+        [string]$iconColor = "#a6e3a1"
+    )
+    
+    [xml]$notifXaml = @"
+    <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+            Title="WinSiRiady Notification" Height="170" Width="380" Background="Transparent" WindowStartupLocation="CenterOwner" ResizeMode="NoResize" WindowStyle="None" AllowsTransparency="True">
+        <Border Background="#1e1e2e" BorderBrush="#313244" BorderThickness="2" CornerRadius="12">
+            <Grid Margin="15">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                
+                <StackPanel Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Horizontal">
+                    <TextBlock Text="$icon" FontSize="36" FontWeight="Bold" Foreground="$iconColor" Margin="0,0,15,0" VerticalAlignment="Center"/>
+                    <TextBlock Text="$message" FontSize="13" FontWeight="SemiBold" Foreground="#cdd6f4" TextWrapping="Wrap" VerticalAlignment="Center" Width="260"/>
+                </StackPanel>
+                
+                <Button Grid.Row="1" x:Name="BtnCloseNotif" Content="Selesai" Height="32" Width="100" Background="#89b4fa" Foreground="#11111b" FontWeight="Bold" BorderThickness="0" HorizontalAlignment="Center">
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="6"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+            </Grid>
+        </Border>
+    </Window>
+"@
+    $notifReader = New-Object System.Xml.XmlNodeReader($notifXaml)
+    $notifWindow = [Windows.Markup.XamlReader]::Load($notifReader)
+    $notifWindow.Owner = $Window
+    
+    $btnClose = $notifWindow.FindName("BtnCloseNotif")
+    $btnClose.Add_Click({
+        $notifWindow.Close()
+    })
+    
+    # Memungkinkan jendela didrag kemana saja
+    $notifWindow.Add_MouseLeftButtonDown({
+        $notifWindow.DragMove()
+    })
+    
+    $notifWindow.ShowDialog() | Out-Null
+}
+
 Write-GuiLog "WinSiRiady Utility berhasil dimuat."
 Write-GuiLog "Root directory: $LocalRoot"
 
@@ -402,8 +453,8 @@ $Global:MonitorTimer.Add_Tick({
 
             Write-GuiLog "[+] Operasi selesai."
             
-            # Popup Information Box to notify completion
-            [System.Windows.MessageBox]::Show("Proses instalasi / optimasi sistem telah selesai!", "WinSiRiady Utility", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Information) | Out-Null
+            # Notifikasi kustom bertema gelap saat selesai
+            Show-CustomNotification "Proses instalasi / optimasi sistem telah selesai!" "✓" "#a6e3a1"
         }
     }
 })
@@ -418,7 +469,7 @@ $BtnInstallApps.Add_Click({
     }
 
     if ($selectedApps.Count -eq 0) {
-        [System.Windows.MessageBox]::Show("Pilih minimal satu aplikasi untuk diinstal.", "Peringatan", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning) | Out-Null
+        Show-CustomNotification "Pilih minimal satu aplikasi untuk diinstal." "!" "#f9e2af"
         return
     }
 
