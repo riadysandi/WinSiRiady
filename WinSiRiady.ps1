@@ -357,7 +357,7 @@ $BtnInstallApps.Add_Click({
                             $sevenZip = "C:\Program Files\7-Zip\7z.exe"
                             if (Test-Path $sevenZip) {
                                 Write-Output "    Mengekstrak berkas dengan 7-Zip..."
-                                & $sevenZip x $dest "-o$targetDir" -y | Out-Null
+                                & $sevenZip x $dest "-o$targetDir" -y 2>$null | Out-Null
                                 Write-Output "[+] Ekstraksi selesai."
                                 Remove-Item $dest -ErrorAction SilentlyContinue
                             } else {
