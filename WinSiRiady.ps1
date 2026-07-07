@@ -1086,6 +1086,30 @@ $GlpiUninstallScriptBlock = {
             }
         }
         
+        # Salin log agent sebelum dihapus ke folder C:\WinSiRiady
+        Write-Output "[*] Mem-backup log GLPI Agent ke C:\WinSiRiady..."
+        $backupDir = "C:\WinSiRiady"
+        if (-not (Test-Path $backupDir)) { New-Item -ItemType Directory -Path $backupDir -Force | Out-Null }
+        
+        $possibleLogs = @(
+            (Join-Path $env:ProgramData "GLPI-Agent\glpi-agent.log"),
+            "C:\Program Files\GLPI-Agent\glpi-agent.log",
+            "C:\Program Files\GLPI-Agent\logs\glpi-agent.log"
+        )
+        
+        foreach ($log in $possibleLogs) {
+            if (Test-Path $log) {
+                try {
+                    $destPath = Join-Path $backupDir "glpi-agent-backup.log"
+                    Copy-Item -Path $log -Destination $destPath -Force -ErrorAction Stop
+                    Write-Output "[+] Berhasil mem-backup log ke: $destPath"
+                    break
+                } catch {
+                    Write-Output "[!] Gagal mem-backup log '$log': $_"
+                }
+            }
+        }
+
         # Hapus sisa folder dan log jika ada
         Write-Output "[*] Membersihkan sisa folder, log, dan cache GLPI Agent..."
         if (Test-Path "C:\Program Files\GLPI-Agent") {
