@@ -265,6 +265,13 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase, Sys
                                     <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
                                 </Button>
                             </Grid>
+                            
+                            <Separator Background="#313244" Margin="0,5,0,15"/>
+                            
+                            <TextBlock Text="Hapus Agent dari Sistem:" Foreground="#a6adc8" FontSize="12" Margin="0,0,0,6"/>
+                            <Button x:Name="BtnGlpiUninstall" Content="Uninstall GLPI Agent" Height="36" Background="#f38ba8" Foreground="#11111b" FontWeight="Bold" BorderThickness="0">
+                                <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                            </Button>
                         </StackPanel>
                     </Border>
                 </Grid>
@@ -354,6 +361,7 @@ $BorderGlpiManage    = $Window.FindName("BorderGlpiManage")
 $TxtGlpiCurrentTag   = $Window.FindName("TxtGlpiCurrentTag")
 $BtnGlpiUpdateTag    = $Window.FindName("BtnGlpiUpdateTag")
 $BtnGlpiDeploy       = $Window.FindName("BtnGlpiDeploy")
+$BtnGlpiUninstall    = $Window.FindName("BtnGlpiUninstall")
 $TxtGlpiProgressLabel = $Window.FindName("TxtGlpiProgressLabel")
 $PrgGlpi             = $Window.FindName("PrgGlpi")
 
@@ -449,6 +457,7 @@ function Update-GlpiStatus {
         $TxtGlpiCurrentTag.IsEnabled = $true
         $BtnGlpiUpdateTag.IsEnabled = $true
         $BtnGlpiDeploy.IsEnabled = $true
+        $BtnGlpiUninstall.IsEnabled = $true
         
         # Set current tag text
         $TxtGlpiCurrentTag.Text = $currentTag
@@ -470,6 +479,7 @@ function Update-GlpiStatus {
         $TxtGlpiCurrentTag.IsEnabled = $false
         $BtnGlpiUpdateTag.IsEnabled = $false
         $BtnGlpiDeploy.IsEnabled = $false
+        $BtnGlpiUninstall.IsEnabled = $false
         $TxtGlpiCurrentTag.Text = ""
     }
 }
@@ -1035,6 +1045,57 @@ $GlpiDeployScriptBlock = {
     }
 }
 
+$GlpiUninstallScriptBlock = {
+    param($logPath)
+    
+    function Write-Log { param($n, $s)
+        $ts = (Get-Date).ToString("yyyy-MM-dd HH:mm:ss")
+        try { Add-Content -Path $logPath -Value "[$ts] $n -- $s" -Encoding UTF8 } catch {}
+    }
+
+    Write-Output "[PROG]1:1:Mencari entri instalasi GLPI Agent..."
+    $uninstallKey = Get-ChildItem -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall", "HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall" -ErrorAction SilentlyContinue |
+        Get-ItemProperty |
+        Where-Object { $_.DisplayName -like "*GLPI Agent*" -or $_.DisplayName -like "*GLPI-Agent*" }
+
+    if ($uninstallKey) {
+        $uninstallString = $uninstallKey.UninstallString
+        if ($uninstallString -match '({[A-Z0-9\-]+})') {
+            $guid = $Matches[1]
+            Write-Output "[*] Menemukan GLPI Agent GUID: $guid"
+            Write-Output "[*] Memulai uninstalasi silang..."
+            $proc = Start-Process "msiexec.exe" -ArgumentList "/x", $guid, "/qn", "/norestart" -PassThru -Wait
+            if ($proc.ExitCode -eq 0 -or $proc.ExitCode -eq 3010) {
+                Write-Output "[+] GLPI Agent berhasil diuninstal."
+                Write-Log "GLPI Agent" "Berhasil diuninstal"
+            } else {
+                Write-Output "[-] Uninstalasi gagal dengan exit code: $($proc.ExitCode)"
+                Write-Log "GLPI Agent" "Gagal diuninstal (Exit: $($proc.ExitCode))"
+            }
+        } else {
+            $cleanCmd = $uninstallString -replace '"', ''
+            Write-Output "[*] Menjalankan perintah uninstal: $cleanCmd"
+            if ($cleanCmd -match "msiexec") { $cleanCmd = $cleanCmd + " /qn /norestart" }
+            $proc = Start-Process cmd.exe -ArgumentList "/c $cleanCmd" -PassThru -Wait
+            if ($proc.ExitCode -eq 0) {
+                Write-Output "[+] GLPI Agent berhasil diuninstal."
+                Write-Log "GLPI Agent" "Berhasil diuninstal"
+            } else {
+                Write-Output "[-] Uninstalasi selesai dengan exit code: $($proc.ExitCode)"
+                Write-Log "GLPI Agent" "Gagal diuninstal (Exit: $($proc.ExitCode))"
+            }
+        }
+        
+        # Hapus sisa folder jika ada
+        Write-Output "[*] Membersihkan sisa folder GLPI Agent..."
+        if (Test-Path "C:\Program Files\GLPI-Agent") {
+            Remove-Item "C:\Program Files\GLPI-Agent" -Recurse -Force -ErrorAction SilentlyContinue
+        }
+    } else {
+        Write-Output "[-] GLPI Agent tidak ditemukan di registry sistem."
+    }
+}
+
 $BtnGlpiInstall.Add_Click({
     $tag = $TxtGlpiInstallTag.Text.Trim()
     if ([string]::IsNullOrWhiteSpace($tag)) {
@@ -1101,6 +1162,27 @@ $BtnGlpiDeploy.Add_Click({
 
     $logPath = "$WinSiRiadyDir\install_history.log"
     $Global:Job = Start-Job -ScriptBlock $GlpiDeployScriptBlock -ArgumentList $logPath
+    $Global:MonitorTimer.Start()
+})
+
+$BtnGlpiUninstall.Add_Click({
+    $BtnGlpiInstall.IsEnabled = $false
+    $BtnGlpiUpdateTag.IsEnabled = $false
+    $BtnGlpiDeploy.IsEnabled = $false
+    $BtnGlpiUninstall.IsEnabled = $false
+
+    $PrgGlpi.Value = 0
+    $PrgGlpi.Visibility = [System.Windows.Visibility]::Visible
+    $TxtGlpiProgressLabel.Visibility = [System.Windows.Visibility]::Visible
+    $TxtGlpiProgressLabel.Text = "Menghapus GLPI Agent dari sistem..."
+    $Global:ActivePrgBar = $PrgGlpi
+    $Global:ActiveLabel  = $TxtGlpiProgressLabel
+
+    Write-GuiLog "[*] Memulai uninstalasi GLPI Agent..."
+    Switch-Panel "Log"
+
+    $logPath = "$WinSiRiadyDir\install_history.log"
+    $Global:Job = Start-Job -ScriptBlock $GlpiUninstallScriptBlock -ArgumentList $logPath
     $Global:MonitorTimer.Start()
 })
 
