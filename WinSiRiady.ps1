@@ -135,10 +135,33 @@ function Write-GuiLog {
 }
 
 Write-GuiLog "WinSiRiady Utility berhasil dimuat."
-Write-GuiLog "Membaca daftar aplikasi dari apps.json..."
 
-# 6. Load Apps dynamically from apps.json
-$appsJsonPath = Join-Path $PSScriptRoot "apps.json"
+# 6. Resolve Local Path or Remote Path
+$LocalRoot = $PSScriptRoot
+if (-not $LocalRoot) {
+    $LocalRoot = Join-Path $env:TEMP "WinSiRiady"
+    if (-not (Test-Path $LocalRoot)) {
+        New-Item -ItemType Directory -Path $LocalRoot -Force | Out-Null
+    }
+}
+
+# If running remotely (via IEX), download apps.json and tweaks.ps1 to TEMP
+if (-not $PSScriptRoot) {
+    Write-GuiLog "Menjalankan via cloud. Mengunduh berkas pendukung dari GitHub..."
+    try {
+        [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+        Invoke-WebRequest -Uri "https://raw.githubusercontent.com/riadysandi/WinSiRiady/master/apps.json" -OutFile (Join-Path $LocalRoot "apps.json") -ErrorAction Stop
+        Invoke-WebRequest -Uri "https://raw.githubusercontent.com/riadysandi/WinSiRiady/master/tweaks.ps1" -OutFile (Join-Path $LocalRoot "tweaks.ps1") -ErrorAction Stop
+        Write-GuiLog "[+] Berkas pendukung berhasil diunduh."
+    } catch {
+        Write-GuiLog "[-] Gagal mengunduh berkas pendukung dari GitHub: $_"
+    }
+}
+
+Write-GuiLog "Membaca daftar aplikasi..."
+
+# 7. Load Apps dynamically from resolved apps.json
+$appsJsonPath = Join-Path $LocalRoot "apps.json"
 if (Test-Path $appsJsonPath) {
     try {
         $apps = Get-Content -Raw -Path $appsJsonPath | ConvertFrom-Json
@@ -178,10 +201,10 @@ if (Test-Path $appsJsonPath) {
     }
 }
 else {
-    Write-GuiLog "[-] File apps.json tidak ditemukan di: $appsJsonPath"
+    Write-GuiLog "[-] Berkas apps.json tidak ditemukan di: $appsJsonPath"
 }
 
-# 7. Job Progress Monitoring Timer Setup
+# 8. Job Progress Monitoring Timer Setup
 $Global:Job = $null
 $Global:MonitorTimer = New-Object System.Windows.Threading.DispatcherTimer
 $Global:MonitorTimer.Interval = [TimeSpan]::FromMilliseconds(200)
@@ -219,7 +242,7 @@ $Global:MonitorTimer.Add_Tick({
     }
 })
 
-# 8. Event Handler for Installing Apps
+# 9. Event Handler for Installing Apps
 $BtnInstallApps.Add_Click({
     # Identify which apps are checked
     $selectedApps = @()
@@ -298,7 +321,7 @@ $BtnInstallApps.Add_Click({
     $Global:MonitorTimer.Start()
 })
 
-# 9. Event Handler for System Optimization (Tweaks)
+# 10. Event Handler for System Optimization (Tweaks)
 $BtnApplyTweaks.Add_Click({
     $TweaksToRun = @{
         Telemetry = $ChkTelemetry.IsChecked
@@ -340,9 +363,9 @@ $BtnApplyTweaks.Add_Click({
     }
 
     # Start Background Job and pass directory root for dot-sourcing
-    $Global:Job = Start-Job -ScriptBlock $TweaksScriptBlock -ArgumentList $TweaksToRun, $PSScriptRoot
+    $Global:Job = Start-Job -ScriptBlock $TweaksScriptBlock -ArgumentList $TweaksToRun, $LocalRoot
     $Global:MonitorTimer.Start()
 })
 
-# 10. Display Window Dialog
+# 11. Display Window Dialog
 $Window.ShowDialog() | Out-Null
