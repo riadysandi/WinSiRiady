@@ -150,6 +150,15 @@ function Write-GuiLog {
     $TxtLog.ScrollToEnd()
 }
 
+# Helper function buat warna brush yang terbukti bekerja di PowerShell WPF
+function New-Brush {
+    param([string]$hex)
+    $color = [System.Windows.Media.ColorConverter]::ConvertFromString($hex)
+    $brush = New-Object System.Windows.Media.SolidColorBrush
+    $brush.Color = $color
+    return $brush
+}
+
 Write-GuiLog "WinSiRiady Utility berhasil dimuat."
 Write-GuiLog "Root directory: $LocalRoot"
 
@@ -163,24 +172,22 @@ if (Test-Path $appsJsonPath) {
     try {
         $apps = Get-Content -Raw -Path $appsJsonPath -Encoding UTF8 | ConvertFrom-Json
         $groupedApps = $apps | Group-Object -Property Category
-        $brushConverter = New-Object System.Windows.Media.BrushConverter
-
         foreach ($group in $groupedApps) {
             # Header Kategori
             $header = New-Object System.Windows.Controls.TextBlock
             $header.Text = $group.Name
             $header.FontSize = 14
             $header.FontWeight = [System.Windows.FontWeights]::Bold
-            $header.Foreground = $brushConverter.ConvertFromString("#cba6f7")
-            $header.Margin = New-Object System.Windows.Thickness(0, 10, 0, 5)
+            $header.Foreground = New-Brush "#cba6f7"
+            $header.Margin = "0,10,0,5"
             $AppsContainer.Children.Add($header) | Out-Null
 
             foreach ($app in $group.Group) {
                 $chk = New-Object System.Windows.Controls.CheckBox
-                $chk.Content = "$($app.Name)  —  $($app.Description)"
-                $chk.Foreground = $brushConverter.ConvertFromString("#cdd6f4")
+                $chk.Content = "$($app.Name)  -  $($app.Description)"
+                $chk.Foreground = New-Brush "#cdd6f4"
                 $chk.FontSize = 12
-                $chk.Margin = New-Object System.Windows.Thickness(10, 3, 0, 3)
+                $chk.Margin = "10,3,0,3"
                 $chk.Tag = $app
                 $AppsContainer.Children.Add($chk) | Out-Null
                 $Global:AppCheckBoxes += $chk
