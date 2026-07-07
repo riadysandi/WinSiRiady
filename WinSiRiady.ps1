@@ -306,6 +306,29 @@ $BtnInstallApps.Add_Click({
                     Write-Output "[-] Error GitHub Release: $_"
                 }
             }
+            elseif ($app.Type -eq "direct_link") {
+                try {
+                    $fileName = if ($app.FileName) { $app.FileName } else { [System.IO.Path]::GetFileName([System.Uri]::new($app.Url).AbsolutePath) }
+                    if (-not $fileName) { $fileName = "installer.exe" }
+                    
+                    $dest = Join-Path $env:TEMP $fileName
+                    Write-Output "    Mengunduh dari URL langsung..."
+                    Invoke-WebRequest -Uri $app.Url -OutFile $dest -UseBasicParsing -ErrorAction Stop
+                    
+                    Write-Output "    Menjalankan installer: $fileName..."
+                    $args = if ($app.Args) { $app.Args } else { "" }
+                    if ($args -ne "") {
+                        $proc = Start-Process -FilePath $dest -ArgumentList $args -Wait -PassThru
+                        Write-Output "[+] Selesai: $($app.Name) (Exit code: $($proc.ExitCode))"
+                    } else {
+                        Start-Process -FilePath $dest -Wait
+                        Write-Output "[+] Selesai: $($app.Name)"
+                    }
+                    Remove-Item $dest -ErrorAction SilentlyContinue
+                } catch {
+                    Write-Output "[-] Error unduhan langsung: $_"
+                }
+            }
         }
     }
 
