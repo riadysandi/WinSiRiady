@@ -14,6 +14,34 @@
     "Description": "Web browser open-source yang fokus pada privasi."
   },
   {
+    "Category": "Utilities",
+    "Name": "7-Zip",
+    "Type": "winget",
+    "Id": "7zip.7zip",
+    "Description": "Utilitas pengarsip file berkecepatan kompresi tinggi."
+  },
+  {
+    "Category": "Utilities",
+    "Name": "WinRAR",
+    "Type": "winget",
+    "Id": "RARLab.WinRAR",
+    "Description": "Utilitas pengarsip file RAR & ZIP yang sangat populer."
+  },
+  {
+    "Category": "Work & Meetings",
+    "Name": "Zoom Workplace",
+    "Type": "winget",
+    "Id": "Zoom.Zoom",
+    "Description": "Aplikasi pertemuan video dan kolaborasi tim."
+  },
+  {
+    "Category": "PDF Readers",
+    "Name": "Adobe Acrobat Reader (64-bit)",
+    "Type": "winget",
+    "Id": "Adobe.Acrobat.Reader.64-bit",
+    "Description": "Standard pembaca, pencetak, dan peninjau PDF gratis."
+  },
+  {
     "Category": "Developer Tools",
     "Name": "Visual Studio Code",
     "Type": "winget",
@@ -26,13 +54,6 @@
     "Type": "winget",
     "Id": "Git.Git",
     "Description": "Sistem pengontrol versi terdistribusi."
-  },
-  {
-    "Category": "Utilities",
-    "Name": "7-Zip",
-    "Type": "winget",
-    "Id": "7zip.7zip",
-    "Description": "Utilitas pengarsip file berkecepatan kompresi tinggi."
   },
   {
     "Category": "Custom Apps (GitHub Release)",
