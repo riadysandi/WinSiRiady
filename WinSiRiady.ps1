@@ -175,8 +175,18 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase, Sys
                         <CheckBox x:Name="ChkCortana" Content="Nonaktifkan Cortana (Menghemat RAM)" Foreground="#cdd6f4" FontSize="13" Margin="0,0,0,12" IsChecked="True" HorizontalAlignment="Left"/>
                         <CheckBox x:Name="ChkBloatware" Content="Hapus Aplikasi Bawaan (Bloatware Windows)" Foreground="#cdd6f4" FontSize="13" Margin="0,0,0,12" IsChecked="False" HorizontalAlignment="Left"/>
                         <CheckBox x:Name="ChkDarkTheme" Content="Aktifkan Tema Gelap (Dark Mode)" Foreground="#cdd6f4" FontSize="13" Margin="0,0,0,12" IsChecked="True" HorizontalAlignment="Left"/>
-                        <CheckBox x:Name="ChkRestorePoint" Content="Buat System Restore Point (Backup Sistem)" Foreground="#cdd6f4" FontSize="13" Margin="0,0,0,12" IsChecked="True" HorizontalAlignment="Left"/>
+                        <CheckBox x:Name="ChkRestorePoint" Content="Buat System Restore Point (Backup Sistem)" Foreground="#cdd6f4" FontSize="13" Margin="0,0,0,4" IsChecked="True" HorizontalAlignment="Left"/>
+                        <TextBlock x:Name="TxtLastRestorePointInfo" Text="↳ Terakhir Dibuat: Sedang memuat..." Foreground="#a6adc8" FontSize="11" Margin="20,0,0,12" HorizontalAlignment="Left"/>
                         <CheckBox x:Name="ChkBitlocker" Content="Matikan Enkripsi BitLocker (Mulai Dekripsi)" Foreground="#cdd6f4" FontSize="13" Margin="0,0,0,12" IsChecked="False" HorizontalAlignment="Left"/>
+                        
+                        <GroupBox Header="Manajemen BitLocker Drive" BorderBrush="#313244" Foreground="#a6adc8" BorderThickness="1" Margin="0,15,0,0" HorizontalAlignment="Stretch">
+                            <GroupBox.Resources>
+                                <Style TargetType="Border">
+                                    <Setter Property="CornerRadius" Value="8"/>
+                                </Style>
+                            </GroupBox.Resources>
+                            <StackPanel x:Name="BitlockerDriveContainer" Margin="10"/>
+                        </GroupBox>
                     </StackPanel>
                 </ScrollViewer>
                 <TextBlock Grid.Row="2" x:Name="TxtTweaksProgressLabel" Text="" Foreground="#a6adc8" FontSize="12" Margin="0,0,0,5" Visibility="Collapsed"/>
@@ -357,6 +367,8 @@ $ChkBloatware        = $Window.FindName("ChkBloatware")
 $ChkDarkTheme        = $Window.FindName("ChkDarkTheme")
 $ChkRestorePoint     = $Window.FindName("ChkRestorePoint")
 $ChkBitlocker        = $Window.FindName("ChkBitlocker")
+$TxtLastRestorePointInfo = $Window.FindName("TxtLastRestorePointInfo")
+$BitlockerDriveContainer = $Window.FindName("BitlockerDriveContainer")
 
 $BtnNavGlpi          = $Window.FindName("BtnNavGlpi")
 $PanelGlpi           = $Window.FindName("PanelGlpi")
@@ -388,6 +400,164 @@ function New-Brush {
     $brush = New-Object System.Windows.Media.SolidColorBrush
     $brush.Color = $color
     return $brush
+}
+
+function Update-LastRestorePointInfo {
+    try {
+        $lastRp = Get-ComputerRestorePoint -ErrorAction SilentlyContinue | Select-Object -Last 1
+        $text = if ($lastRp) {
+            $ts = $lastRp.CreationTime
+            $desc = $lastRp.Description
+            "↳ Terakhir Dibuat: $ts ($desc)"
+        } else {
+            "↳ Terakhir Dibuat: Belum ada restore point terdeteksi."
+        }
+        $TxtLastRestorePointInfo.Text = $text
+    } catch {
+        $TxtLastRestorePointInfo.Text = "↳ Terakhir Dibuat: Gagal membaca data restore point."
+    }
+}
+
+function Refresh-BitLockerUI {
+    $BitlockerDriveContainer.Children.Clear()
+    
+    try {
+        $volumes = Get-BitLockerVolume -ErrorAction SilentlyContinue
+        if (-not $volumes) {
+            $lbl = New-Object System.Windows.Controls.TextBlock
+            $lbl.Text = "Tidak ada drive terdeteksi atau modul BitLocker tidak tersedia."
+            $lbl.Foreground = New-Brush "#585b70"
+            $lbl.FontStyle = [System.Windows.FontStyles]::Italic
+            $lbl.FontSize = 12
+            $BitlockerDriveContainer.Children.Add($lbl) | Out-Null
+            return
+        }
+        
+        foreach ($vol in $volumes) {
+            $drive = $vol.MountPoint
+            $status = $vol.VolumeStatus
+            $prot = $vol.ProtectionStatus
+            
+            $rowGrid = New-Object System.Windows.Controls.Grid
+            $rowGrid.Margin = New-Object System.Windows.Thickness(0, 4, 0, 4)
+            
+            $c1 = New-Object System.Windows.Controls.ColumnDefinition; $c1.Width = [System.Windows.GridLength]::new(1.5, [System.Windows.GridUnitType]::Star)
+            $c2 = New-Object System.Windows.Controls.ColumnDefinition; $c2.Width = [System.Windows.GridLength]::new(2, [System.Windows.GridUnitType]::Star)
+            $c3 = New-Object System.Windows.Controls.ColumnDefinition; $c3.Width = [System.Windows.GridLength]::new(1.5, [System.Windows.GridUnitType]::Star)
+            $rowGrid.ColumnDefinitions.Add($c1)
+            $rowGrid.ColumnDefinitions.Add($c2)
+            $rowGrid.ColumnDefinitions.Add($c3)
+            
+            $txtDrive = New-Object System.Windows.Controls.TextBlock
+            $txtDrive.Text = "💾 Drive $drive"
+            $txtDrive.FontSize = 13
+            $txtDrive.FontWeight = [System.Windows.FontWeights]::SemiBold
+            $txtDrive.Foreground = New-Brush "#cdd6f4"
+            $txtDrive.VerticalAlignment = [System.Windows.VerticalAlignment]::Center
+            [System.Windows.Controls.Grid]::SetColumn($txtDrive, 0)
+            $rowGrid.Children.Add($txtDrive) | Out-Null
+            
+            $txtStatus = New-Object System.Windows.Controls.TextBlock
+            $txtStatus.FontSize = 12
+            $txtStatus.VerticalAlignment = [System.Windows.VerticalAlignment]::Center
+            
+            $color = "#a6e3a1"
+            $statusText = "Terdekripsi (Off)"
+            
+            if ($status -eq "FullyEncrypted" -or $prot -eq "On") {
+                $color = "#f38ba8"
+                $statusText = "Terenkripsi (On)"
+            } elseif ($status -eq "DecryptionInProgress") {
+                $color = "#f9e2af"
+                $statusText = "Dekripsi Berjalan..."
+            } elseif ($status -eq "EncryptionInProgress") {
+                $color = "#f9e2af"
+                $statusText = "Enkripsi Berjalan..."
+            }
+            
+            $txtStatus.Text = $statusText
+            $txtStatus.Foreground = New-Brush $color
+            [System.Windows.Controls.Grid]::SetColumn($txtStatus, 1)
+            $rowGrid.Children.Add($txtStatus) | Out-Null
+            
+            $btn = New-Object System.Windows.Controls.Button
+            $btn.Height = 26
+            $btn.FontSize = 11
+            $btn.FontWeight = [System.Windows.FontWeights]::Bold
+            $btn.BorderThickness = 0
+            
+            $cornerStyle = New-Object System.Windows.Style -ArgumentList [System.Windows.Controls.Border]
+            $setter = New-Object System.Windows.Setter -ArgumentList [System.Windows.Controls.Border]::CornerRadiusProperty, (New-Object System.Windows.CornerRadius -ArgumentList 4)
+            $cornerStyle.Setters.Add($setter)
+            $btn.Resources.Add([System.Windows.Controls.Border], $cornerStyle)
+            
+            if ($status -eq "FullyEncrypted" -or $prot -eq "On") {
+                $btn.Content = "Matikan"
+                $btn.Background = New-Brush "#313244"
+                $btn.Foreground = New-Brush "#f38ba8"
+                
+                $btn.Add_Click({
+                    param($sender, $e)
+                    $confirm = [System.Windows.MessageBox]::Show("Apakah Anda yakin ingin mematikan BitLocker dan mendekripsi drive $drive?", "Konfirmasi Dekripsi", [System.Windows.MessageBoxButton]::YesNo, [System.Windows.MessageBoxImage]::Warning)
+                    if ($confirm -eq [System.Windows.MessageBoxResult]::Yes) {
+                        Write-GuiLog "[*] Menjalankan dekripsi BitLocker pada drive $drive..."
+                        $scriptBlock = {
+                            param($d)
+                            Disable-BitLocker -MountPoint $d -ErrorAction Stop
+                        }
+                        Start-Job -ScriptBlock $scriptBlock -ArgumentList $drive | Out-Null
+                        Show-CustomNotification "Proses dekripsi drive $drive dimulai di latar belakang!" "success"
+                        Start-Sleep -Seconds 1
+                        Refresh-BitLockerUI
+                    }
+                })
+            } else {
+                $btn.Content = "Nyalakan"
+                $btn.Background = New-Brush "#89b4fa"
+                $btn.Foreground = New-Brush "#11111b"
+                
+                $btn.Add_Click({
+                    param($sender, $e)
+                    $confirm = [System.Windows.MessageBox]::Show("Apakah Anda yakin ingin mengaktifkan BitLocker pada drive $drive?`n`nKunci pemulihan akan dicadangkan otomatis ke folder C:\WinSiRiady.", "Konfirmasi Enkripsi", [System.Windows.MessageBoxButton]::YesNo, [System.Windows.MessageBoxImage]::Question)
+                    if ($confirm -eq [System.Windows.MessageBoxResult]::Yes) {
+                        Write-GuiLog "[*] Memulai proses enkripsi BitLocker pada drive $drive..."
+                        
+                        $scriptBlock = {
+                            param($d, $backupDir)
+                            if (-not (Test-Path $backupDir)) { New-Item -ItemType Directory -Path $backupDir -Force | Out-Null }
+                            
+                            $protector = Add-BitLockerKeyProtector -MountPoint $d -PasswordProtector -ErrorAction Stop
+                            $recoveryKey = $protector.KeyProtector | Where-Object { $_.KeyProtectorType -eq "RecoveryPassword" } | Select-Object -First 1
+                            if ($recoveryKey) {
+                                $keyText = $recoveryKey.RecoveryPassword
+                                $logFile = Join-Path $backupDir "BitLocker_Recovery_Key_$($d.Replace(':', '')).txt"
+                                "Drive: $d`r`nTanggal: $(Get-Date)`r`nKunci Pemulihan: $keyText" | Out-File -FilePath $logFile -Encoding utf8
+                            }
+                            
+                            Enable-BitLocker -MountPoint $d -TpmProtector -ErrorAction Stop
+                        }
+                        
+                        $backupFolder = "C:\WinSiRiady"
+                        Start-Job -ScriptBlock $scriptBlock -ArgumentList $drive, $backupFolder | Out-Null
+                        Show-CustomNotification "Proses enkripsi drive $drive dimulai! Kunci disimpan di C:\WinSiRiady." "success"
+                        Start-Sleep -Seconds 1
+                        Refresh-BitLockerUI
+                    }
+                })
+            }
+            
+            [System.Windows.Controls.Grid]::SetColumn($btn, 2)
+            $rowGrid.Children.Add($btn) | Out-Null
+            
+            $BitlockerDriveContainer.Children.Add($rowGrid) | Out-Null
+        }
+    } catch {
+        $lbl = New-Object System.Windows.Controls.TextBlock
+        $lbl.Text = "Gagal memindai drive: $_"
+        $lbl.Foreground = New-Brush "#f38ba8"
+        $lbl.FontSize = 12
+        $BitlockerDriveContainer.Children.Add($lbl) | Out-Null
+    }
 }
 
 function Write-LogFile {
@@ -589,7 +759,11 @@ $BtnNavGlpi.Add_Click({
         Show-CustomNotification "Password salah! Akses ditolak." "error"
     }
 })
-$BtnNavTweaks.Add_Click({ Switch-Panel "Tweaks" })
+$BtnNavTweaks.Add_Click({
+    Switch-Panel "Tweaks"
+    Update-LastRestorePointInfo
+    Refresh-BitLockerUI
+})
 $BtnNavLog.Add_Click({    Switch-Panel "Log" })
 $BtnNavAbout.Add_Click({  Switch-Panel "About" })
 
@@ -856,6 +1030,8 @@ $Global:MonitorTimer.Add_Tick({
             $BtnGlpiUpdateTag.IsEnabled = $true
             $BtnGlpiDeploy.IsEnabled = $true
             Update-GlpiStatus
+            Update-LastRestorePointInfo
+            Refresh-BitLockerUI
 
             if ($Global:ActivePrgBar) {
                 $Global:ActivePrgBar.Value = 100
