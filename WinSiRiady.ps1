@@ -476,15 +476,15 @@ function Show-PasswordPrompt {
     $btnCancel = $promptWindow.FindName("BtnCancel")
     $btnOk = $promptWindow.FindName("BtnOk")
     
-    $result = $null
+    $script:PromptPasswordResult = $null
     
     $btnOk.Add_Click({
-        $script:result = $txtPassword.Password
+        $script:PromptPasswordResult = $txtPassword.Password
         $promptWindow.Close()
     })
     
     $btnCancel.Add_Click({
-        $script:result = $null
+        $script:PromptPasswordResult = $null
         $promptWindow.Close()
     })
     
@@ -493,7 +493,7 @@ function Show-PasswordPrompt {
     })
     
     $promptWindow.ShowDialog() | Out-Null
-    return $result
+    return $script:PromptPasswordResult
 }
 function Update-GlpiStatus {
     $ServiceName = "glpi-agent"
