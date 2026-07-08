@@ -838,8 +838,21 @@ function Build-AppGrid {
         $row = [Math]::Floor($i / 3)
         $col = $i % 3
 
+        $suffix = ""
+        if ($app.Type -eq "winget") {
+            $suffix = " [Instal]"
+        } elseif ($app.Type -eq "direct_link") {
+            if ($null -ne $app.Args -and $app.Args -ne "") {
+                $suffix = " [Instal]"
+            } else {
+                $suffix = " [Jalankan]"
+            }
+        } elseif ($app.Type -eq "download_to_folder" -or $app.Type -eq "github_release") {
+            $suffix = " [Unduh]"
+        }
+
         $chk = New-Object System.Windows.Controls.CheckBox
-        $chk.Content = $app.Name
+        $chk.Content = "$($app.Name)$suffix"
         $chk.Foreground = New-Brush "#cdd6f4"
         $chk.FontSize = 12
         $chk.Margin = New-Object System.Windows.Thickness(4, 1, 4, 1)
@@ -983,7 +996,7 @@ $Global:StatusTimer.Add_Tick({
             if ($appId -and $rawOutput -match [regex]::Escape($appId)) {
                 $chk.IsEnabled = $false
                 $chk.Foreground = New-Brush "#4a5568"
-                $chk.Content = "$($chk.Content.ToString()) [Installed]"
+                $chk.Content = "$($chk.Content.ToString()) [Terinstal]"
                 $installedCount++
             }
         }
