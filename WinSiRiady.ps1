@@ -710,6 +710,9 @@ $Global:StatusTimer.Start()
 $Global:Job          = $null
 $Global:ActivePrgBar = $null
 $Global:ActiveLabel  = $null
+$Global:CurrentAppIndex = $null
+$Global:TotalApps       = $null
+$Global:CurrentAppName  = $null
 
 $Global:MonitorTimer = New-Object System.Windows.Threading.DispatcherTimer
 $Global:MonitorTimer.Interval = [TimeSpan]::FromMilliseconds(300)
@@ -719,6 +722,9 @@ $Global:MonitorTimer.Add_Tick({
         foreach ($line in $output) {
             if ($line -match '^\[PROG\](\d+):(\d+):(.+)$') {
                 $cur = [int]$matches[1]; $tot = [int]$matches[2]; $appName = $matches[3]
+                $Global:CurrentAppIndex = $cur
+                $Global:TotalApps = $tot
+                $Global:CurrentAppName = $appName
                 if ($Global:ActivePrgBar) {
                     $Global:ActivePrgBar.Value = [Math]::Round(($cur - 1) / $tot * 100)
                 }
@@ -727,6 +733,15 @@ $Global:MonitorTimer.Add_Tick({
                     $Global:ActiveLabel.Visibility = [System.Windows.Visibility]::Visible
                 }
                 Write-GuiLog ">> Memproses: $appName... ($cur / $tot)"
+            } elseif ($line -match '^\s*Unduh:\s*(\d+)%') {
+                $pct = [int]$matches[1]
+                if ($Global:ActiveLabel -and $Global:CurrentAppName) {
+                    $Global:ActiveLabel.Text = "Memproses: $Global:CurrentAppName... (Unduh: $pct%) ($Global:CurrentAppIndex dari $Global:TotalApps)"
+                }
+                if ($Global:ActivePrgBar -and $Global:CurrentAppIndex -and $Global:TotalApps) {
+                    $Global:ActivePrgBar.Value = [Math]::Round((($Global:CurrentAppIndex - 1) + ($pct / 100)) / $Global:TotalApps * 100)
+                }
+                Write-GuiLog $line
             } else {
                 Write-GuiLog $line
             }
@@ -771,6 +786,46 @@ $InstallScriptBlock = {
         try { Add-Content -Path $logPath -Value "[$ts] $n -- $s" -Encoding UTF8 } catch {}
     }
 
+    function Download-FileWithProgress {
+        param([string]$url, [string]$dest)
+        $parentDir = Split-Path $dest
+        if (-not (Test-Path $parentDir)) { New-Item -ItemType Directory -Path $parentDir -Force | Out-Null }
+        try {
+            [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+            $request = [System.Net.HttpWebRequest]::Create($url)
+            $request.Timeout = 60000
+            $request.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+            $response = $request.GetResponse()
+            $totalBytes = $response.ContentLength
+            $responseStream = $response.GetResponseStream()
+            $targetStream = [System.IO.File]::Create($dest)
+            $buffer = New-Object Byte[] 65536
+            $bytesRead = 0
+            $totalBytesRead = 0
+            $lastPercent = -1
+            do {
+                $bytesRead = $responseStream.Read($buffer, 0, $buffer.Length)
+                if ($bytesRead -gt 0) {
+                    $targetStream.Write($buffer, 0, $bytesRead)
+                    $totalBytesRead += $bytesRead
+                    if ($totalBytes -gt 0) {
+                        $percent = [Math]::Min(100, [Math]::Max(0, [Math]::Floor(($totalBytesRead / $totalBytes) * 100)))
+                        if ($percent -ge $lastPercent + 2 -or $percent -eq 100) {
+                            Write-Output "    Unduh: $percent%"
+                            $lastPercent = $percent
+                        }
+                    }
+                }
+            } while ($bytesRead -gt 0)
+            $targetStream.Close()
+            $responseStream.Close()
+            $response.Close()
+        } catch {
+            Write-Output "    [!] HttpWebRequest gagal. Menggunakan fallback..."
+            Invoke-WebRequest -Uri $url -OutFile $dest -UseBasicParsing -ErrorAction Stop
+        }
+    }
+
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
     $ProgressPreference = 'SilentlyContinue'
     
@@ -811,7 +866,7 @@ $InstallScriptBlock = {
                 if (-not $asset) { Write-Output "[-] Aset tidak ditemukan: $($app.Name)"; Write-Log $app.Name "Gagal - aset tidak ditemukan"; continue }
                 $dest = Join-Path $env:TEMP $asset.name
                 Write-Output "    Mengunduh $($asset.name)..."
-                Invoke-WebRequest -Uri $asset.browser_download_url -OutFile $dest -UseBasicParsing
+                Download-FileWithProgress -url $asset.browser_download_url -dest $dest
                 Start-Process -FilePath $dest -Wait
                 Remove-Item $dest -ErrorAction SilentlyContinue
                 Write-Output "[+] Selesai: $($app.Name)"
@@ -824,7 +879,7 @@ $InstallScriptBlock = {
                 if (-not $fileName) { $fileName = "installer.exe" }
                 $dest = Join-Path $env:TEMP $fileName
                 Write-Output "    Mengunduh $fileName..."
-                Invoke-WebRequest -Uri $app.Url -OutFile $dest -UseBasicParsing -ErrorAction Stop
+                Download-FileWithProgress -url $app.Url -dest $dest
                 $args = if ($app.Args) { $app.Args } else { "" }
                 if ($args) {
                     $proc = Start-Process -FilePath $dest -ArgumentList $args -Wait -PassThru
@@ -844,7 +899,7 @@ $InstallScriptBlock = {
                 if (-not $fileName) { $fileName = "downloaded_file.zip" }
                 $dest = Join-Path $targetDir $fileName
                 Write-Output "    Mengunduh ke $targetDir..."
-                Invoke-WebRequest -Uri $app.Url -OutFile $dest -UseBasicParsing -ErrorAction Stop
+                Download-FileWithProgress -url $app.Url -dest $dest
                 Write-Output "[+] Berhasil diunduh: $dest"
                 Write-Log $app.Name "Berhasil diunduh ke $dest"
 
@@ -973,6 +1028,46 @@ $GlpiInstallScriptBlock = {
         try { Add-Content -Path $logPath -Value "[$ts] $n -- $s" -Encoding UTF8 } catch {}
     }
 
+    function Download-FileWithProgress {
+        param([string]$url, [string]$dest)
+        $parentDir = Split-Path $dest
+        if (-not (Test-Path $parentDir)) { New-Item -ItemType Directory -Path $parentDir -Force | Out-Null }
+        try {
+            [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+            $request = [System.Net.HttpWebRequest]::Create($url)
+            $request.Timeout = 60000
+            $request.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+            $response = $request.GetResponse()
+            $totalBytes = $response.ContentLength
+            $responseStream = $response.GetResponseStream()
+            $targetStream = [System.IO.File]::Create($dest)
+            $buffer = New-Object Byte[] 65536
+            $bytesRead = 0
+            $totalBytesRead = 0
+            $lastPercent = -1
+            do {
+                $bytesRead = $responseStream.Read($buffer, 0, $buffer.Length)
+                if ($bytesRead -gt 0) {
+                    $targetStream.Write($buffer, 0, $bytesRead)
+                    $totalBytesRead += $bytesRead
+                    if ($totalBytes -gt 0) {
+                        $percent = [Math]::Min(100, [Math]::Max(0, [Math]::Floor(($totalBytesRead / $totalBytes) * 100)))
+                        if ($percent -ge $lastPercent + 2 -or $percent -eq 100) {
+                            Write-Output "    Unduh: $percent%"
+                            $lastPercent = $percent
+                        }
+                    }
+                }
+            } while ($bytesRead -gt 0)
+            $targetStream.Close()
+            $responseStream.Close()
+            $response.Close()
+        } catch {
+            Write-Output "    [!] HttpWebRequest gagal. Menggunakan fallback..."
+            Invoke-WebRequest -Uri $url -OutFile $dest -UseBasicParsing -ErrorAction Stop
+        }
+    }
+
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
     $ProgressPreference = 'SilentlyContinue'
     Write-Output "[PROG]1:3:Mencari rilis GLPI Agent terbaru..."
@@ -998,7 +1093,7 @@ $GlpiInstallScriptBlock = {
         $MsiPath = Join-Path $TempDir $asset.name
         
         Write-Output "[PROG]2:3:Mengunduh GLPI Agent installer..."
-        Invoke-WebRequest -Uri $MsiUrl -OutFile $MsiPath -UseBasicParsing -ErrorAction Stop
+        Download-FileWithProgress -url $MsiUrl -dest $MsiPath
         
         Write-Output "[PROG]3:3:Menginstal GLPI Agent..."
         $msiArgs = @(
