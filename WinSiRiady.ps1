@@ -490,7 +490,7 @@ function Refresh-BitLockerUI {
             $style = [System.Windows.Markup.XamlReader]::Parse('<Style xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style>')
             $btn.Resources.Add([System.Windows.Controls.Border], $style)
             
-            if ($status -eq "FullyEncrypted" -or $prot -eq "On") {
+            if ($status -ne "FullyDecrypted" -and $null -ne $status) {
                 $btn.Content = "Matikan"
                 $btn.Background = New-Brush "#313244"
                 $btn.Foreground = New-Brush "#f38ba8"
