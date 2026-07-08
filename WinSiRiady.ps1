@@ -750,7 +750,7 @@ $Global:MonitorTimer.Add_Tick({
                 # Update baris terakhir di TxtLog secara langsung agar tidak membanjiri log ke bawah
                 $ts = (Get-Date).ToString("HH:mm:ss")
                 $lines = $TxtLog.Text -split "`r`n"
-                if ($lines.Count -gt 1 -and $lines[-2] -match '^\s*\[\d{2}\:\d{2}\:\d{2}\]\s*Unduh:') {
+                if ($lines.Count -gt 1 -and $lines[-2] -match '^\s*\[\d{2}[\:\.]\d{2}[\:\.]\d{2}\]\s*Unduh:') {
                     $lines[-2] = "[$ts]    Unduh: $pct%"
                     $TxtLog.Text = ($lines -join "`r`n")
                     $TxtLog.ScrollToEnd()
