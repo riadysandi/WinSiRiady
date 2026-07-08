@@ -499,15 +499,27 @@ function Refresh-BitLockerUI {
                     param($sender, $e)
                     $confirm = [System.Windows.MessageBox]::Show("Apakah Anda yakin ingin mematikan BitLocker dan mendekripsi drive $drive?", "Konfirmasi Dekripsi", [System.Windows.MessageBoxButton]::YesNo, [System.Windows.MessageBoxImage]::Warning)
                     if ($confirm -eq [System.Windows.MessageBoxResult]::Yes) {
+                        $BtnInstallApps.IsEnabled = $false
+                        $BtnDownloadDriver.IsEnabled = $false
+                        $BtnApplyTweaks.IsEnabled = $false
+                        
                         Write-GuiLog "[*] Menjalankan dekripsi BitLocker pada drive $drive..."
+                        Switch-Panel "Log"
+                        
                         $scriptBlock = {
                             param($d)
-                            Disable-BitLocker -MountPoint $d -ErrorAction Stop
+                            Write-Output "[*] Memulai proses dekripsi BitLocker pada drive $($d)..."
+                            try {
+                                Disable-BitLocker -MountPoint $d -ErrorAction Stop
+                                Write-Output "[+] Dekripsi BitLocker berhasil dimulai untuk drive $($d)."
+                                Write-Output "[+] Proses dekripsi sedang berjalan di latar belakang Windows."
+                            } catch {
+                                Write-Output "[-] Gagal menonaktifkan BitLocker pada drive $($d): $_"
+                            }
                         }
-                        Start-Job -ScriptBlock $scriptBlock -ArgumentList $drive | Out-Null
-                        Show-CustomNotification "Proses dekripsi drive $drive dimulai di latar belakang!" "success"
-                        Start-Sleep -Seconds 1
-                        Refresh-BitLockerUI
+                        
+                        $Global:Job = Start-Job -ScriptBlock $scriptBlock -ArgumentList $drive
+                        $Global:MonitorTimer.Start()
                     }
                 })
             } else {
@@ -519,28 +531,42 @@ function Refresh-BitLockerUI {
                     param($sender, $e)
                     $confirm = [System.Windows.MessageBox]::Show("Apakah Anda yakin ingin mengaktifkan BitLocker pada drive $drive?`n`nKunci pemulihan akan dicadangkan otomatis ke folder C:\WinSiRiady.", "Konfirmasi Enkripsi", [System.Windows.MessageBoxButton]::YesNo, [System.Windows.MessageBoxImage]::Question)
                     if ($confirm -eq [System.Windows.MessageBoxResult]::Yes) {
+                        $BtnInstallApps.IsEnabled = $false
+                        $BtnDownloadDriver.IsEnabled = $false
+                        $BtnApplyTweaks.IsEnabled = $false
+                        
                         Write-GuiLog "[*] Memulai proses enkripsi BitLocker pada drive $drive..."
+                        Switch-Panel "Log"
                         
                         $scriptBlock = {
                             param($d, $backupDir)
-                            if (-not (Test-Path $backupDir)) { New-Item -ItemType Directory -Path $backupDir -Force | Out-Null }
-                            
-                            $protector = Add-BitLockerKeyProtector -MountPoint $d -PasswordProtector -ErrorAction Stop
-                            $recoveryKey = $protector.KeyProtector | Where-Object { $_.KeyProtectorType -eq "RecoveryPassword" } | Select-Object -First 1
-                            if ($recoveryKey) {
-                                $keyText = $recoveryKey.RecoveryPassword
-                                $logFile = Join-Path $backupDir "BitLocker_Recovery_Key_$($d.Replace(':', '')).txt"
-                                "Drive: $d`r`nTanggal: $(Get-Date)`r`nKunci Pemulihan: $keyText" | Out-File -FilePath $logFile -Encoding utf8
+                            Write-Output "[*] Menyiapkan enkripsi BitLocker untuk drive $($d)..."
+                            try {
+                                if (-not (Test-Path $backupDir)) { New-Item -ItemType Directory -Path $backupDir -Force | Out-Null }
+                                
+                                Write-Output "[*] Mengaktifkan BitLocker dengan Recovery Password Protector..."
+                                $volume = Enable-BitLocker -MountPoint $d -RecoveryPasswordProtector -ErrorAction Stop
+                                
+                                # Dapatkan password pemulihan yang digenerate
+                                $recoveryKey = $volume.KeyProtector | Where-Object { $_.KeyProtectorType -eq "RecoveryPassword" } | Select-Object -First 1
+                                if ($recoveryKey) {
+                                    $keyText = $recoveryKey.RecoveryPassword
+                                    $driveLetter = $d -replace ':', ''
+                                    $logFile = Join-Path $backupDir "BitLocker_Recovery_Key_$driveLetter.txt"
+                                    "Drive: $d`r`nTanggal: $(Get-Date)`r`nKunci Pemulihan: $keyText" | Out-File -FilePath $logFile -Encoding utf8
+                                    Write-Output "[+] Kunci pemulihan berhasil dicadangkan ke: $logFile"
+                                    Write-Output "[+] KUNCI PEMULIHAN: $keyText"
+                                }
+                                
+                                Write-Output "[+] Enkripsi BitLocker berhasil dimulai untuk drive $($d)."
+                            } catch {
+                                Write-Output "[-] Gagal mengaktifkan BitLocker pada drive $($d): $_"
                             }
-                            
-                            Enable-BitLocker -MountPoint $d -TpmProtector -ErrorAction Stop
                         }
                         
                         $backupFolder = "C:\WinSiRiady"
-                        Start-Job -ScriptBlock $scriptBlock -ArgumentList $drive, $backupFolder | Out-Null
-                        Show-CustomNotification "Proses enkripsi drive $drive dimulai! Kunci disimpan di C:\WinSiRiady." "success"
-                        Start-Sleep -Seconds 1
-                        Refresh-BitLockerUI
+                        $Global:Job = Start-Job -ScriptBlock $scriptBlock -ArgumentList $drive, $backupFolder
+                        $Global:MonitorTimer.Start()
                     }
                 })
             }
