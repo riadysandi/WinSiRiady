@@ -399,6 +399,7 @@ function Show-CustomNotification {
     $icon = "&#x2713;"
     $iconColor = "#a6e3a1"
     if ($type -eq "warning") { $icon = "!"; $iconColor = "#f9e2af" }
+    elseif ($type -eq "error") { $icon = "&#x2717;"; $iconColor = "#f38ba8" }
 
     [xml]$notifXaml = @"
     <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -428,6 +429,71 @@ function Show-CustomNotification {
     $nWin.FindName("BtnCloseNotif").Add_Click({ $nWin.Close() })
     $nWin.Add_MouseLeftButtonDown({ $nWin.DragMove() })
     $nWin.ShowDialog() | Out-Null
+}
+
+function Show-PasswordPrompt {
+    [xml]$xaml = @"
+    <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+            Title="Otorisasi Admin" Height="185" Width="360" Background="Transparent"
+            WindowStartupLocation="CenterOwner" ResizeMode="NoResize" WindowStyle="None" AllowsTransparency="True">
+        <Border Background="#1e1e2e" BorderBrush="#313244" BorderThickness="2" CornerRadius="12">
+            <Grid Margin="20">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                
+                <TextBlock Grid.Row="0" Text="Masukkan Password GLPI Admin:" FontSize="13" FontWeight="SemiBold" Foreground="#cdd6f4" Margin="0,0,0,10"/>
+                
+                <PasswordBox Grid.Row="1" x:Name="TxtPassword" Height="32" Background="#313244" Foreground="#cdd6f4" BorderBrush="#45475a" BorderThickness="1" VerticalAlignment="Center" Padding="8,5,8,5">
+                    <PasswordBox.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="6"/>
+                        </Style>
+                    </PasswordBox.Resources>
+                </PasswordBox>
+                
+                <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+                    <Button x:Name="BtnCancel" Content="Batal" Height="30" Width="80" Background="#313244" Foreground="#a6adc8" FontWeight="SemiBold" BorderThickness="0" Margin="0,0,10,0">
+                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                    </Button>
+                    <Button x:Name="BtnOk" Content="Masuk" Height="30" Width="80" Background="#89b4fa" Foreground="#11111b" FontWeight="Bold" BorderThickness="0" IsDefault="True">
+                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Window>
+"@
+
+    $reader = (New-Object System.Xml.XmlNodeReader $xaml)
+    $promptWindow = [Windows.Markup.XamlReader]::Load($reader)
+    $promptWindow.Owner = $Window
+    
+    $txtPassword = $promptWindow.FindName("TxtPassword")
+    $btnCancel = $promptWindow.FindName("BtnCancel")
+    $btnOk = $promptWindow.FindName("BtnOk")
+    
+    $result = $null
+    
+    $btnOk.Add_Click({
+        $script:result = $txtPassword.Password
+        $promptWindow.Close()
+    })
+    
+    $btnCancel.Add_Click({
+        $script:result = $null
+        $promptWindow.Close()
+    })
+    
+    $promptWindow.Add_Loaded({
+        $txtPassword.Focus() | Out-Null
+    })
+    
+    $promptWindow.ShowDialog() | Out-Null
+    return $result
 }
 function Update-GlpiStatus {
     $ServiceName = "glpi-agent"
@@ -511,7 +577,14 @@ function Switch-Panel {
 
 $BtnNavApps.Add_Click({   Switch-Panel "Apps" })
 $BtnNavDriver.Add_Click({ Switch-Panel "Driver" })
-$BtnNavGlpi.Add_Click({   Switch-Panel "Glpi" })
+$BtnNavGlpi.Add_Click({
+    $password = Show-PasswordPrompt
+    if ($password -eq "pm@1tt55tgr") {
+        Switch-Panel "Glpi"
+    } elseif ($null -ne $password) {
+        Show-CustomNotification "Password salah! Akses ditolak." "error"
+    }
+})
 $BtnNavTweaks.Add_Click({ Switch-Panel "Tweaks" })
 $BtnNavLog.Add_Click({    Switch-Panel "Log" })
 $BtnNavAbout.Add_Click({  Switch-Panel "About" })
