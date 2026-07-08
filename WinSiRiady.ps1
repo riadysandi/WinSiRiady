@@ -772,6 +772,7 @@ $InstallScriptBlock = {
     }
 
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+    $ProgressPreference = 'SilentlyContinue'
     
     # Ratakan array jika bersarang (nested array)
     $apps = @()
@@ -973,6 +974,7 @@ $GlpiInstallScriptBlock = {
     }
 
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+    $ProgressPreference = 'SilentlyContinue'
     Write-Output "[PROG]1:3:Mencari rilis GLPI Agent terbaru..."
     
     $ServerURL = "https://itpma-ticketing.pinusmerahabadi.co.id/plugins/glpiinventory/"
