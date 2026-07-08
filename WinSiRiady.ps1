@@ -176,7 +176,7 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase, Sys
                         <CheckBox x:Name="ChkBloatware" Content="Hapus Aplikasi Bawaan (Bloatware Windows)" Foreground="#cdd6f4" FontSize="13" Margin="0,0,0,12" IsChecked="False" HorizontalAlignment="Left"/>
                         <CheckBox x:Name="ChkDarkTheme" Content="Aktifkan Tema Gelap (Dark Mode)" Foreground="#cdd6f4" FontSize="13" Margin="0,0,0,12" IsChecked="True" HorizontalAlignment="Left"/>
                         <CheckBox x:Name="ChkRestorePoint" Content="Buat System Restore Point (Backup Sistem)" Foreground="#cdd6f4" FontSize="13" Margin="0,0,0,4" IsChecked="True" HorizontalAlignment="Left"/>
-                        <TextBlock x:Name="TxtLastRestorePointInfo" Text="↳ Terakhir Dibuat: Sedang memuat..." Foreground="#a6adc8" FontSize="11" Margin="20,0,0,12" HorizontalAlignment="Left"/>
+                        <TextBlock x:Name="TxtLastRestorePointInfo" Text="-> Terakhir Dibuat: Sedang memuat..." Foreground="#a6adc8" FontSize="11" Margin="20,0,0,12" HorizontalAlignment="Left"/>
                         <CheckBox x:Name="ChkBitlocker" Content="Matikan Enkripsi BitLocker (Mulai Dekripsi)" Foreground="#cdd6f4" FontSize="13" Margin="0,0,0,12" IsChecked="False" HorizontalAlignment="Left"/>
                         
                         <GroupBox Header="Manajemen BitLocker Drive" BorderBrush="#313244" Foreground="#a6adc8" BorderThickness="1" Margin="0,15,0,0" HorizontalAlignment="Stretch">
@@ -406,15 +406,17 @@ function Update-LastRestorePointInfo {
     try {
         $lastRp = Get-ComputerRestorePoint -ErrorAction SilentlyContinue | Select-Object -Last 1
         $text = if ($lastRp) {
-            $ts = $lastRp.CreationTime
+            # Convert raw WMI/CIM DateTime string to local DateTime object
+            $dateObj = [System.Management.ManagementDateTimeConverter]::ToDateTime($lastRp.CreationTime)
+            $ts = $dateObj.ToString("dd/MM/yyyy HH.mm.ss")
             $desc = $lastRp.Description
-            "↳ Terakhir Dibuat: $ts ($desc)"
+            "-> Terakhir Dibuat: $ts ($desc)"
         } else {
-            "↳ Terakhir Dibuat: Belum ada restore point terdeteksi."
+            "-> Terakhir Dibuat: Belum ada restore point terdeteksi."
         }
         $TxtLastRestorePointInfo.Text = $text
     } catch {
-        $TxtLastRestorePointInfo.Text = "↳ Terakhir Dibuat: Gagal membaca data restore point."
+        $TxtLastRestorePointInfo.Text = "-> Terakhir Dibuat: Gagal membaca data restore point."
     }
 }
 
@@ -486,10 +488,9 @@ function Refresh-BitLockerUI {
             $btn.FontWeight = [System.Windows.FontWeights]::Bold
             $btn.BorderThickness = 0
             
-            $cornerStyle = New-Object System.Windows.Style -ArgumentList [System.Windows.Controls.Border]
-            $setter = New-Object System.Windows.Setter -ArgumentList [System.Windows.Controls.Border]::CornerRadiusProperty, (New-Object System.Windows.CornerRadius -ArgumentList 4)
-            $cornerStyle.Setters.Add($setter)
-            $btn.Resources.Add([System.Windows.Controls.Border], $cornerStyle)
+            # Apply rounded corner style using a parsed XAML style to avoid PowerShell type conversion issues
+            $style = [System.Windows.Markup.XamlReader]::Parse('<Style xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style>')
+            $btn.Resources.Add([System.Windows.Controls.Border], $style)
             
             if ($status -eq "FullyEncrypted" -or $prot -eq "On") {
                 $btn.Content = "Matikan"
