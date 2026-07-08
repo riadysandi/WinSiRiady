@@ -116,10 +116,10 @@ function Create-SystemRestorePoint {
     try {
         Write-Host "    Mengaktifkan System Restore pada drive C:..." -ForegroundColor Yellow
         Enable-ComputerRestore -Drive "C:\" -ErrorAction Stop
-        Write-Host "    Membuat System Restore Point 'Sebelum Optimasi WinSiRiady'..." -ForegroundColor Yellow
+        Write-Host "    Membuat System Restore Point 'restore point Optimasi WinSiRiady'..." -ForegroundColor Yellow
         # Set registry key to bypass 24 hours frequency limit for testing if needed
         Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\SystemRestore" -Name "SystemRestorePointCreationFrequency" -Value 0 -Force -ErrorAction SilentlyContinue
-        Checkpoint-Computer -Description "Sebelum Optimasi WinSiRiady" -RestorePointType "APPLICATION_INSTALL" -ErrorAction Stop
+        Checkpoint-Computer -Description "restore point Optimasi WinSiRiady" -RestorePointType "APPLICATION_INSTALL" -ErrorAction Stop
         Write-Host "[+] System Restore Point berhasil dibuat." -ForegroundColor Green
     }
     catch {
