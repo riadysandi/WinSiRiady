@@ -176,8 +176,7 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase, Sys
                         <CheckBox x:Name="ChkBloatware" Content="Hapus Aplikasi Bawaan (Bloatware Windows)" Foreground="#cdd6f4" FontSize="13" Margin="0,0,0,12" IsChecked="False" HorizontalAlignment="Left"/>
                         <CheckBox x:Name="ChkDarkTheme" Content="Aktifkan Tema Gelap (Dark Mode)" Foreground="#cdd6f4" FontSize="13" Margin="0,0,0,12" IsChecked="True" HorizontalAlignment="Left"/>
                         <CheckBox x:Name="ChkRestorePoint" Content="Buat System Restore Point (Backup Sistem)" Foreground="#cdd6f4" FontSize="13" Margin="0,0,0,4" IsChecked="True" HorizontalAlignment="Left"/>
-                        <TextBlock x:Name="TxtLastRestorePointInfo" Text="-> Terakhir Dibuat: Sedang memuat..." Foreground="#a6adc8" FontSize="11" Margin="20,0,0,12" HorizontalAlignment="Left"/>
-                        <CheckBox x:Name="ChkBitlocker" Content="Matikan Enkripsi BitLocker (Mulai Dekripsi)" Foreground="#cdd6f4" FontSize="13" Margin="0,0,0,12" IsChecked="False" HorizontalAlignment="Left"/>
+                        <TextBlock x:Name="TxtLastRestorePointInfo" Text="-> Terakhir Dibuat: Sedang memuat..." Foreground="#a6adc8" FontSize="11" Margin="20,0,0,15" HorizontalAlignment="Left"/>
                         
                         <GroupBox Header="Manajemen BitLocker Drive" BorderBrush="#313244" Foreground="#a6adc8" BorderThickness="1" Margin="0,15,0,0" HorizontalAlignment="Stretch">
                             <GroupBox.Resources>
@@ -366,7 +365,6 @@ $ChkCortana          = $Window.FindName("ChkCortana")
 $ChkBloatware        = $Window.FindName("ChkBloatware")
 $ChkDarkTheme        = $Window.FindName("ChkDarkTheme")
 $ChkRestorePoint     = $Window.FindName("ChkRestorePoint")
-$ChkBitlocker        = $Window.FindName("ChkBitlocker")
 $TxtLastRestorePointInfo = $Window.FindName("TxtLastRestorePointInfo")
 $BitlockerDriveContainer = $Window.FindName("BitlockerDriveContainer")
 
@@ -451,7 +449,7 @@ function Refresh-BitLockerUI {
             $rowGrid.ColumnDefinitions.Add($c3)
             
             $txtDrive = New-Object System.Windows.Controls.TextBlock
-            $txtDrive.Text = "💾 Drive $drive"
+            $txtDrive.Text = "Drive $drive"
             $txtDrive.FontSize = 13
             $txtDrive.FontWeight = [System.Windows.FontWeights]::SemiBold
             $txtDrive.Foreground = New-Brush "#cdd6f4"
@@ -1261,7 +1259,6 @@ $BtnApplyTweaks.Add_Click({
         Bloatware    = [bool]$ChkBloatware.IsChecked
         DarkTheme    = [bool]$ChkDarkTheme.IsChecked
         RestorePoint = [bool]$ChkRestorePoint.IsChecked
-        Bitlocker    = [bool]$ChkBitlocker.IsChecked
     }
 
     $BtnInstallApps.IsEnabled = $false
@@ -1282,12 +1279,11 @@ $BtnApplyTweaks.Add_Click({
         param($tweaks, $rootPath)
         $tweaksFile = Join-Path $rootPath "tweaks.ps1"
         if (Test-Path $tweaksFile) { . $tweaksFile } else { Write-Output "[-] tweaks.ps1 tidak ditemukan."; return }
-        if ($tweaks.RestorePoint) { Write-Output "[PROG]1:6:Buat Restore Point"; Create-SystemRestorePoint }
-        if ($tweaks.Bitlocker)    { Write-Output "[PROG]2:6:Matikan BitLocker"; Disable-BitLockerVolume }
-        if ($tweaks.Telemetry)    { Write-Output "[PROG]3:6:Matikan Telemetri"; Optimize-Telemetry }
-        if ($tweaks.Cortana)      { Write-Output "[PROG]4:6:Nonaktifkan Cortana"; Optimize-Cortana }
-        if ($tweaks.Bloatware)    { Write-Output "[PROG]5:6:Hapus Bloatware"; Remove-Bloatware }
-        if ($tweaks.DarkTheme)    { Write-Output "[PROG]6:6:Aktifkan Tema Gelap"; Enable-DarkTheme }
+        if ($tweaks.RestorePoint) { Write-Output "[PROG]1:5:Buat Restore Point"; Create-SystemRestorePoint }
+        if ($tweaks.Telemetry)    { Write-Output "[PROG]2:5:Matikan Telemetri"; Optimize-Telemetry }
+        if ($tweaks.Cortana)      { Write-Output "[PROG]3:5:Nonaktifkan Cortana"; Optimize-Cortana }
+        if ($tweaks.Bloatware)    { Write-Output "[PROG]4:5:Hapus Bloatware"; Remove-Bloatware }
+        if ($tweaks.DarkTheme)    { Write-Output "[PROG]5:5:Aktifkan Tema Gelap"; Enable-DarkTheme }
     }
 
     $Global:Job = Start-Job -ScriptBlock $TweaksBlock -ArgumentList $tweaks, $LocalRoot
