@@ -171,10 +171,12 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase, Sys
                 <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="0,0,0,15">
                     <StackPanel Margin="5">
                         <TextBlock Text="Pilih Tweak Optimasi Windows:" FontSize="14" FontWeight="SemiBold" Foreground="#a6adc8" Margin="0,0,0,15"/>
-                        <CheckBox x:Name="ChkTelemetry" Content="Matikan Telemetri &amp; Diagnostik (Meningkatkan Privasi)" Foreground="#cdd6f4" FontSize="13" Margin="0,0,0,12" IsChecked="True"/>
-                        <CheckBox x:Name="ChkCortana" Content="Nonaktifkan Cortana (Menghemat RAM)" Foreground="#cdd6f4" FontSize="13" Margin="0,0,0,12" IsChecked="True"/>
-                        <CheckBox x:Name="ChkBloatware" Content="Hapus Aplikasi Bawaan (Bloatware Windows)" Foreground="#cdd6f4" FontSize="13" Margin="0,0,0,12" IsChecked="False"/>
-                        <CheckBox x:Name="ChkDarkTheme" Content="Aktifkan Tema Gelap (Dark Mode)" Foreground="#cdd6f4" FontSize="13" Margin="0,0,0,12" IsChecked="True"/>
+                        <CheckBox x:Name="ChkTelemetry" Content="Matikan Telemetri &amp; Diagnostik (Meningkatkan Privasi)" Foreground="#cdd6f4" FontSize="13" Margin="0,0,0,12" IsChecked="True" HorizontalAlignment="Left"/>
+                        <CheckBox x:Name="ChkCortana" Content="Nonaktifkan Cortana (Menghemat RAM)" Foreground="#cdd6f4" FontSize="13" Margin="0,0,0,12" IsChecked="True" HorizontalAlignment="Left"/>
+                        <CheckBox x:Name="ChkBloatware" Content="Hapus Aplikasi Bawaan (Bloatware Windows)" Foreground="#cdd6f4" FontSize="13" Margin="0,0,0,12" IsChecked="False" HorizontalAlignment="Left"/>
+                        <CheckBox x:Name="ChkDarkTheme" Content="Aktifkan Tema Gelap (Dark Mode)" Foreground="#cdd6f4" FontSize="13" Margin="0,0,0,12" IsChecked="True" HorizontalAlignment="Left"/>
+                        <CheckBox x:Name="ChkRestorePoint" Content="Buat System Restore Point (Backup Sistem)" Foreground="#cdd6f4" FontSize="13" Margin="0,0,0,12" IsChecked="True" HorizontalAlignment="Left"/>
+                        <CheckBox x:Name="ChkBitlocker" Content="Matikan Enkripsi BitLocker (Mulai Dekripsi)" Foreground="#cdd6f4" FontSize="13" Margin="0,0,0,12" IsChecked="False" HorizontalAlignment="Left"/>
                     </StackPanel>
                 </ScrollViewer>
                 <TextBlock Grid.Row="2" x:Name="TxtTweaksProgressLabel" Text="" Foreground="#a6adc8" FontSize="12" Margin="0,0,0,5" Visibility="Collapsed"/>
@@ -353,6 +355,8 @@ $ChkTelemetry        = $Window.FindName("ChkTelemetry")
 $ChkCortana          = $Window.FindName("ChkCortana")
 $ChkBloatware        = $Window.FindName("ChkBloatware")
 $ChkDarkTheme        = $Window.FindName("ChkDarkTheme")
+$ChkRestorePoint     = $Window.FindName("ChkRestorePoint")
+$ChkBitlocker        = $Window.FindName("ChkBitlocker")
 
 $BtnNavGlpi          = $Window.FindName("BtnNavGlpi")
 $PanelGlpi           = $Window.FindName("PanelGlpi")
@@ -636,6 +640,7 @@ function Build-AppGrid {
         $chk.Foreground = New-Brush "#cdd6f4"
         $chk.FontSize = 12
         $chk.Margin = New-Object System.Windows.Thickness(4, 1, 4, 1)
+        $chk.HorizontalAlignment = [System.Windows.HorizontalAlignment]::Left
         $chk.Tag = $app
         [System.Windows.Controls.Grid]::SetRow($chk, $row)
         [System.Windows.Controls.Grid]::SetColumn($chk, $col)
@@ -1074,10 +1079,12 @@ $BtnDownloadDriver.Add_Click({
 # === STEP 19: APPLY TWEAKS BUTTON ===
 $BtnApplyTweaks.Add_Click({
     $tweaks = @{
-        Telemetry = [bool]$ChkTelemetry.IsChecked
-        Cortana   = [bool]$ChkCortana.IsChecked
-        Bloatware = [bool]$ChkBloatware.IsChecked
-        DarkTheme = [bool]$ChkDarkTheme.IsChecked
+        Telemetry    = [bool]$ChkTelemetry.IsChecked
+        Cortana      = [bool]$ChkCortana.IsChecked
+        Bloatware    = [bool]$ChkBloatware.IsChecked
+        DarkTheme    = [bool]$ChkDarkTheme.IsChecked
+        RestorePoint = [bool]$ChkRestorePoint.IsChecked
+        Bitlocker    = [bool]$ChkBitlocker.IsChecked
     }
 
     $BtnInstallApps.IsEnabled = $false
@@ -1098,10 +1105,12 @@ $BtnApplyTweaks.Add_Click({
         param($tweaks, $rootPath)
         $tweaksFile = Join-Path $rootPath "tweaks.ps1"
         if (Test-Path $tweaksFile) { . $tweaksFile } else { Write-Output "[-] tweaks.ps1 tidak ditemukan."; return }
-        if ($tweaks.Telemetry) { Write-Output "[PROG]1:4:Matikan Telemetri"; Optimize-Telemetry }
-        if ($tweaks.Cortana)   { Write-Output "[PROG]2:4:Nonaktifkan Cortana"; Optimize-Cortana }
-        if ($tweaks.Bloatware) { Write-Output "[PROG]3:4:Hapus Bloatware"; Remove-Bloatware }
-        if ($tweaks.DarkTheme) { Write-Output "[PROG]4:4:Aktifkan Dark Mode"; Enable-DarkTheme }
+        if ($tweaks.RestorePoint) { Write-Output "[PROG]1:6:Buat Restore Point"; Create-SystemRestorePoint }
+        if ($tweaks.Bitlocker)    { Write-Output "[PROG]2:6:Matikan BitLocker"; Disable-BitLockerVolume }
+        if ($tweaks.Telemetry)    { Write-Output "[PROG]3:6:Matikan Telemetri"; Optimize-Telemetry }
+        if ($tweaks.Cortana)      { Write-Output "[PROG]4:6:Nonaktifkan Cortana"; Optimize-Cortana }
+        if ($tweaks.Bloatware)    { Write-Output "[PROG]5:6:Hapus Bloatware"; Remove-Bloatware }
+        if ($tweaks.DarkTheme)    { Write-Output "[PROG]6:6:Aktifkan Tema Gelap"; Enable-DarkTheme }
     }
 
     $Global:Job = Start-Job -ScriptBlock $TweaksBlock -ArgumentList $tweaks, $LocalRoot

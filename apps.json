@@ -49,6 +49,15 @@
     "Description": "Utilitas tangkapan layar (screenshot) cepat dan instan."
   },
   {
+    "Category": "Utilities",
+    "Name": "UltraViewer",
+    "Type": "direct_link",
+    "Url": "https://cloud.pinusmerahabadi.co.id/index.php/s/NSa8NTkrc7Ai3kj/download",
+    "FileName": "UltraViewer_setup.exe",
+    "Args": "/verysilent",
+    "Description": "Aplikasi remote desktop UltraViewer."
+  },
+  {
     "Category": "Work & Communications",
     "Name": "Zoom Workplace",
     "Type": "winget",
@@ -77,6 +86,13 @@
     "Description": "Aplikasi chat populer WhatsApp versi desktop."
   },
   {
+    "Category": "Work & Communications",
+    "Name": "Microsoft Teams",
+    "Type": "winget",
+    "Id": "Microsoft.Teams",
+    "Description": "Aplikasi kolaborasi Microsoft Teams."
+  },
+  {
     "Category": "PDF & Office",
     "Name": "Adobe Acrobat Reader (64-bit)",
     "Type": "winget",
@@ -89,6 +105,21 @@
     "Type": "winget",
     "Id": "Kingsoft.WPSOffice",
     "Description": "Alternatif suite perkantoran (Word, Excel, PPT) yang ringan."
+  },
+  {
+    "Category": "PDF & Office",
+    "Name": "Microsoft 365 (Office 365)",
+    "Type": "winget",
+    "Id": "Microsoft.Office",
+    "Description": "Paket produktivitas Microsoft 365 / Office 365."
+  },
+  {
+    "Category": "PDF & Office",
+    "Name": "Office 2019",
+    "Type": "download_to_folder",
+    "Url": "https://officecdn.microsoft.com/db/492350F6-3A01-4F97-B9C0-C7C6DDF67D60/media/en-US/ProPlus2019Retail.img",
+    "FileName": "Office 2019.img",
+    "Description": "Unduh file installer Office 2019 Retail."
   },
   {
     "Category": "Developer Tools",
@@ -162,5 +193,59 @@
     "FileName": "Resetter Epson L5190 ITKoding.rar",
     "Extract": false,
     "Description": "Unduh file resetter epson tanpa diekstrak ke C:\\WinSiRiady."
+  },
+  {
+    "Category": "Internal Wajib",
+    "Name": "Desktop (Wallpaper PMA)",
+    "Type": "download_to_folder",
+    "Url": "https://cloud.pinusmerahabadi.co.id/index.php/s/anC48ekDDPHs6pw/download",
+    "FileName": "Desktop.zip",
+    "Extract": false,
+    "Description": "Unduh paket Desktop & Wallpaper PMA."
+  },
+  {
+    "Category": "Internal Wajib",
+    "Name": "Crowdstrike Falcon Client",
+    "Type": "download_to_folder",
+    "Url": "https://cloud.pinusmerahabadi.co.id/index.php/s/AS5a2mzoFqfwfof/download",
+    "FileName": "Crowdstrike.zip",
+    "Extract": false,
+    "Description": "Unduh paket Crowdstrike Falcon Client."
+  },
+  {
+    "Category": "Internal Wajib",
+    "Name": "Foxit PDF Reader",
+    "Type": "download_to_folder",
+    "Url": "https://cloud.pinusmerahabadi.co.id/index.php/s/NRHenZD3EZaTi7M/download",
+    "FileName": "FoxitReader.zip",
+    "Extract": false,
+    "Description": "Unduh berkas instalasi Foxit PDF Reader."
+  },
+  {
+    "Category": "Internal Wajib",
+    "Name": "Snagit",
+    "Type": "download_to_folder",
+    "Url": "https://cloud.pinusmerahabadi.co.id/index.php/s/eqTp9Wwj4pZAeJX/download",
+    "FileName": "Snagit.zip",
+    "Extract": false,
+    "Description": "Unduh perekam layar Snagit."
+  },
+  {
+    "Category": "Internal Wajib",
+    "Name": "FreePCAudit",
+    "Type": "direct_link",
+    "Url": "https://cloud.pinusmerahabadi.co.id/index.php/s/Dj7pJm7sADtCSWm/download",
+    "FileName": "FreePCAudit.exe",
+    "Args": "",
+    "Description": "Utilitas portable untuk audit hardware dan software PC (sekali jalan)."
+  },
+  {
+    "Category": "Internal Wajib",
+    "Name": "SAP GUI",
+    "Type": "download_to_folder",
+    "Url": "https://cloud.pinusmerahabadi.co.id/index.php/s/7E3cFiPiimCwWQH/download",
+    "FileName": "SAP.zip",
+    "Extract": false,
+    "Description": "Unduh berkas SAP GUI Client."
   }
 ]

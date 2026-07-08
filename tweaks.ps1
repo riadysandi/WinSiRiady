@@ -86,5 +86,47 @@ function Enable-DarkTheme {
     }
 }
 
+# 5. Disable BitLocker Decryption
+function Disable-BitLockerVolume {
+    Write-Host "[*] Memeriksa status enkripsi BitLocker..." -ForegroundColor Cyan
+    try {
+        $volumes = Get-BitLockerVolume -ErrorAction SilentlyContinue
+        if (-not $volumes) {
+            Write-Host "[info] Tidak ada drive dengan enkripsi BitLocker aktif atau modul BitLocker tidak tersedia." -ForegroundColor Yellow
+            return
+        }
+        foreach ($vol in $volumes) {
+            if ($vol.VolumeStatus -eq "FullyDecrypted") {
+                Write-Host "    Drive $($vol.MountPoint) sudah tidak terenkripsi (Fully Decrypted)." -ForegroundColor Yellow
+            } else {
+                Write-Host "    Menonaktifkan BitLocker pada drive $($vol.MountPoint)..." -ForegroundColor Yellow
+                Disable-BitLocker -MountPoint $vol.MountPoint -ErrorAction Stop
+                Write-Host "[+] Proses dekripsi BitLocker dimulai untuk drive $($vol.MountPoint). Proses ini berjalan di latar belakang Windows." -ForegroundColor Green
+            }
+        }
+    }
+    catch {
+        Write-Host "[-] Gagal menonaktifkan BitLocker: $_" -ForegroundColor Red
+    }
+}
+
+# 6. Create System Restore Point
+function Create-SystemRestorePoint {
+    Write-Host "[*] Mengaktifkan System Restore dan membuat Restore Point..." -ForegroundColor Cyan
+    try {
+        Write-Host "    Mengaktifkan System Restore pada drive C:..." -ForegroundColor Yellow
+        Enable-ComputerRestore -Drive "C:\" -ErrorAction Stop
+        Write-Host "    Membuat System Restore Point 'Sebelum Optimasi WinSiRiady'..." -ForegroundColor Yellow
+        # Set registry key to bypass 24 hours frequency limit for testing if needed
+        Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\SystemRestore" -Name "SystemRestorePointCreationFrequency" -Value 0 -Force -ErrorAction SilentlyContinue
+        Checkpoint-Computer -Description "Sebelum Optimasi WinSiRiady" -RestorePointType "APPLICATION_INSTALL" -ErrorAction Stop
+        Write-Host "[+] System Restore Point berhasil dibuat." -ForegroundColor Green
+    }
+    catch {
+        Write-Host "[-] Gagal membuat Restore Point: $_" -ForegroundColor Red
+        Write-Host "    (Catatan: Pastikan komputer tidak sedang membuat restore point lain atau batasan grup GPO memblokirnya)." -ForegroundColor Yellow
+    }
+}
+
 # Export functions for import in other scripts
-Export-ModuleMember -Function Optimize-Telemetry, Optimize-Cortana, Remove-Bloatware, Enable-DarkTheme
+Export-ModuleMember -Function Optimize-Telemetry, Optimize-Cortana, Remove-Bloatware, Enable-DarkTheme, Disable-BitLockerVolume, Create-SystemRestorePoint
