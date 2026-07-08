@@ -247,5 +247,64 @@
     "FileName": "SAP.zip",
     "Extract": false,
     "Description": "Unduh berkas SAP GUI Client."
+  },
+  {
+    "Category": "Printer Drivers",
+    "Name": "Epson L120 Printer Driver",
+    "Type": "download_to_folder",
+    "Url": "https://cloud.pinusmerahabadi.co.id/index.php/s/placeholder-l120/download",
+    "FileName": "Epson_L120_Driver.zip",
+    "Extract": false,
+    "Description": "Unduh paket driver printer Epson L120."
+  },
+  {
+    "Category": "Printer Drivers",
+    "Name": "Epson L3110 Printer & Scanner Driver",
+    "Type": "download_to_folder",
+    "Url": "https://cloud.pinusmerahabadi.co.id/index.php/s/placeholder-l3110/download",
+    "FileName": "Epson_L3110_Driver.zip",
+    "Extract": false,
+    "Description": "Unduh paket driver printer & scanner EcoTank L3110."
+  },
+  {
+    "Category": "Printer Drivers",
+    "Name": "Epson L3210 Printer & Scanner Driver",
+    "Type": "download_to_folder",
+    "Url": "https://cloud.pinusmerahabadi.co.id/index.php/s/placeholder-l3210/download",
+    "FileName": "Epson_L3210_Driver.zip",
+    "Extract": false,
+    "Description": "Unduh paket driver printer & scanner EcoTank L3210."
+  },
+  {
+    "Category": "Printer Drivers",
+    "Name": "Epson L5190 Printer & Scanner Driver",
+    "Type": "download_to_folder",
+    "Url": "https://cloud.pinusmerahabadi.co.id/index.php/s/placeholder-l5190/download",
+    "FileName": "Epson_L5190_Driver.zip",
+    "Extract": false,
+    "Description": "Unduh paket driver printer & scanner EcoTank L5190."
+  },
+  {
+    "Category": "Printer Drivers",
+    "Name": "Epson L5290 Printer & Scanner Driver",
+    "Type": "download_to_folder",
+    "Url": "https://cloud.pinusmerahabadi.co.id/index.php/s/placeholder-l5290/download",
+    "FileName": "Epson_L5290_Driver.zip",
+    "Extract": false,
+    "Description": "Unduh paket driver printer & scanner EcoTank L5290."
+  },
+  {
+    "Category": "System Drivers",
+    "Name": "Intel Chipset Device Software",
+    "Type": "winget",
+    "Id": "Intel.ChipsetDeviceSoftware",
+    "Description": "Instal driver chipset Intel resmi via winget."
+  },
+  {
+    "Category": "System Drivers",
+    "Name": "Realtek Audio Control",
+    "Type": "winget",
+    "Id": "Realtek.AudioControl",
+    "Description": "Instal aplikasi kontrol audio Realtek via winget."
   }
 ]
