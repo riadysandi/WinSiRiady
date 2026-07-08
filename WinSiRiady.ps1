@@ -746,7 +746,18 @@ $Global:MonitorTimer.Add_Tick({
                 if ($Global:ActivePrgBar -and $Global:CurrentAppIndex -and $Global:TotalApps) {
                     $Global:ActivePrgBar.Value = [Math]::Round((($Global:CurrentAppIndex - 1) + ($pct / 100)) / $Global:TotalApps * 100)
                 }
-                Write-GuiLog $line
+                
+                # Update baris terakhir di TxtLog secara langsung agar tidak membanjiri log ke bawah
+                $ts = (Get-Date).ToString("HH:mm:ss")
+                $lines = $TxtLog.Text -split "`r`n"
+                if ($lines.Count -gt 1 -and $lines[-2] -match '^\s*\[\d{2}\:\d{2}\:\d{2}\]\s*Unduh:') {
+                    $lines[-2] = "[$ts]    Unduh: $pct%"
+                    $TxtLog.Text = ($lines -join "`r`n")
+                    $TxtLog.ScrollToEnd()
+                } else {
+                    $TxtLog.AppendText("[$ts]    Unduh: $pct%`r`n")
+                    $TxtLog.ScrollToEnd()
+                }
             } else {
                 Write-GuiLog $line
             }
