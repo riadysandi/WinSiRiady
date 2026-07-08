@@ -128,5 +128,3 @@ function Create-SystemRestorePoint {
     }
 }
 
-# Export functions for import in other scripts
-Export-ModuleMember -Function Optimize-Telemetry, Optimize-Cortana, Remove-Bloatware, Enable-DarkTheme, Disable-BitLockerVolume, Create-SystemRestorePoint
