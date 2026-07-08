@@ -5,7 +5,11 @@
 # === STEP 1: ADMINISTRATOR CHECK ===
 $isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 if (-not $isAdmin) {
-    Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -Command `"irm 'https://cdn.jsdelivr.net/gh/riadysandi/WinSiRiady@master/WinSiRiady.ps1' | iex`"" -Verb RunAs
+    if ($MyInvocation.MyCommand.Path -and (Test-Path $MyInvocation.MyCommand.Path)) {
+        Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$($MyInvocation.MyCommand.Path)`"" -Verb RunAs
+    } else {
+        Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -Command `"irm 'https://cdn.jsdelivr.net/gh/riadysandi/WinSiRiady@master/WinSiRiady.ps1' | iex`"" -Verb RunAs
+    }
     exit
 }
 
