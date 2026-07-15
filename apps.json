@@ -232,6 +232,15 @@
   },
   {
     "Category": "Internal Wajib",
+    "Name": "Driver Booster",
+    "Type": "download_to_folder",
+    "Url": "https://cloud.pinusmerahabadi.co.id/index.php/s/M2bpFJpFJSo4CQR/download",
+    "FileName": "Driver_Booster.zip",
+    "Extract": false,
+    "Description": "Driver Booster."
+  },
+  {
+    "Category": "Internal Wajib",
     "Name": "FreePCAudit",
     "Type": "direct_link",
     "Url": "https://cloud.pinusmerahabadi.co.id/index.php/s/Dj7pJm7sADtCSWm/download",
