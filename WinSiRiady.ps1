@@ -722,9 +722,9 @@ function Update-GlpiStatus {
         $TxtGlpiStatusTitle.Foreground = New-Brush "#a6e3a1"
         $TxtGlpiStatusDesc.Text = if ($currentTag) { "Terhubung dengan Asset TAG: $currentTag. Service berjalan normal." } else { "Terinstal tetapi TAG belum diset. Silakan isi TAG di panel kanan." }
         
-        # Disable installation
-        $TxtGlpiInstallTag.IsEnabled = $false
-        $BtnGlpiInstall.IsEnabled = $false
+        # Disable installation fields? No, keep them enabled as requested
+        $TxtGlpiInstallTag.IsEnabled = $true
+        $BtnGlpiInstall.IsEnabled = $true
         
         # Enable management
         $BorderGlpiManage.IsEnabled = $true
@@ -781,12 +781,13 @@ function Switch-Panel {
 $BtnNavApps.Add_Click({   Switch-Panel "Apps" })
 $BtnNavDriver.Add_Click({ Switch-Panel "Driver" })
 $BtnNavGlpi.Add_Click({
-    $password = Show-PasswordPrompt
-    if ($password -eq "pm@1tt55tgr") {
-        Switch-Panel "Glpi"
-    } elseif ($null -ne $password) {
-        Show-CustomNotification "Password salah! Akses ditolak." "error"
-    }
+    # $password = Show-PasswordPrompt
+    # if ($password -eq "pm@1tt55tgr") {
+    #     Switch-Panel "Glpi"
+    # } elseif ($null -ne $password) {
+    #     Show-CustomNotification "Password salah! Akses ditolak." "error"
+    # }
+    Switch-Panel "Glpi"
 })
 $BtnNavTweaks.Add_Click({
     Switch-Panel "Tweaks"
@@ -1545,14 +1546,23 @@ $GlpiUninstallScriptBlock = {
 }
 
 $BtnGlpiInstall.Add_Click({
+    $glpiInstalled = (Get-Service -Name "glpi-agent" -ErrorAction SilentlyContinue) -ne $null -or (Test-Path "C:\Program Files\GLPI-Agent\glpi-agent.bat")
     $tag = $TxtGlpiInstallTag.Text.Trim()
-    if ([string]::IsNullOrWhiteSpace($tag)) {
-        Show-CustomNotification "TAG tidak boleh kosong untuk instalasi baru!" "warning"
-        return
-    }
-    if ($tag -notmatch '^\d+$') {
-        Show-CustomNotification "TAG hanya boleh diisi angka!" "warning"
-        return
+    
+    if (-not $glpiInstalled) {
+        if ([string]::IsNullOrWhiteSpace($tag)) {
+            Show-CustomNotification "TAG tidak boleh kosong untuk instalasi baru!" "warning"
+            return
+        }
+        if ($tag -notmatch '^\d+$') {
+            Show-CustomNotification "TAG hanya boleh diisi angka!" "warning"
+            return
+        }
+    } else {
+        if (-not [string]::IsNullOrWhiteSpace($tag) -and $tag -notmatch '^\d+$') {
+            Show-CustomNotification "TAG hanya boleh diisi angka!" "warning"
+            return
+        }
     }
 
     $BtnGlpiInstall.IsEnabled = $false
