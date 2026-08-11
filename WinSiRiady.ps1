@@ -66,9 +66,9 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase, Sys
                     <TextBlock Text="Windows Utility v2.0" FontSize="11" Foreground="#a6adc8" Margin="0,3,0,0"/>
                 </StackPanel>
                 <StackPanel Grid.Row="1" Margin="10,0,10,0">
-                    <Button x:Name="BtnNavApps" Content="Instal Aplikasi" Height="40" Margin="0,4,0,4" Background="#313244" Foreground="#cdd6f4" FontWeight="SemiBold" BorderThickness="0" FontSize="13"><Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources></Button>
+                    <Button x:Name="BtnNavApps" Content="Instal Aplikasi" Height="40" Margin="0,4,0,4" Background="Transparent" Foreground="#a6adc8" FontWeight="SemiBold" BorderThickness="0" FontSize="13"><Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources></Button>
                     <Button x:Name="BtnNavDriver" Content="Driver" Height="40" Margin="0,4,0,4" Background="Transparent" Foreground="#a6adc8" FontWeight="SemiBold" BorderThickness="0" FontSize="13"><Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources></Button>
-                    <Button x:Name="BtnNavGlpi" Content="GLPI Agent" Height="40" Margin="0,4,0,4" Background="Transparent" Foreground="#a6adc8" FontWeight="SemiBold" BorderThickness="0" FontSize="13"><Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources></Button>
+                    <Button x:Name="BtnNavGlpi" Content="GLPI Agent" Height="40" Margin="0,4,0,4" Background="#313244" Foreground="#cdd6f4" FontWeight="SemiBold" BorderThickness="0" FontSize="13"><Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources></Button>
                     <Button x:Name="BtnNavTweaks" Content="Optimasi Sistem" Height="40" Margin="0,4,0,4" Background="Transparent" Foreground="#a6adc8" FontWeight="SemiBold" BorderThickness="0" FontSize="13"><Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources></Button>
                     <Button x:Name="BtnNavLog" Content="Console Log" Height="40" Margin="0,4,0,4" Background="Transparent" Foreground="#a6adc8" FontWeight="SemiBold" BorderThickness="0" FontSize="13"><Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources></Button>
                     <Button x:Name="BtnNavAbout" Content="Tentang" Height="40" Margin="0,4,0,4" Background="Transparent" Foreground="#a6adc8" FontWeight="SemiBold" BorderThickness="0" FontSize="13"><Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources></Button>
@@ -84,7 +84,7 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase, Sys
         <Grid Grid.Column="1" Margin="25">
 
             <!-- PAGE 1: INSTAL APLIKASI -->
-            <Grid x:Name="PanelApps" Visibility="Visible">
+            <Grid x:Name="PanelApps" Visibility="Collapsed">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
@@ -209,7 +209,7 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase, Sys
             </Grid>
 
             <!-- PAGE 5: GLPI AGENT -->
-            <Grid x:Name="PanelGlpi" Visibility="Collapsed">
+            <Grid x:Name="PanelGlpi" Visibility="Visible">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/> <!-- Title -->
                     <RowDefinition Height="Auto"/> <!-- Status Banner Card -->
