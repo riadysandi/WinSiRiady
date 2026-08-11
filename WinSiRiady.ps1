@@ -1446,6 +1446,12 @@ $GlpiInstallScriptBlock = {
 $GlpiDeployScriptBlock = {
     param($logPath)
     Write-Output "[PROG]1:1:Menjalankan Force Inventory..."
+    
+    # Mencegah konflik dengan instalasi Perl lain (misal: Oracle)
+    $env:PERL5LIB = ""
+    $env:PERLLIB = ""
+    $env:PERL5OPT = ""
+    
     $glpiBat = "C:\Program Files\GLPI-Agent\glpi-agent.bat"
     if (Test-Path $glpiBat) {
         Write-Output "[*] Memulai sinkronisasi data inventory ke server GLPI..."
