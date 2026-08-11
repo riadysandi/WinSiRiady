@@ -699,21 +699,18 @@ function Show-PasswordPrompt {
     return $script:PromptPasswordResult
 }
 function Update-GlpiStatus {
-    $ServiceName = "glpi-agent"
-    $svc = Get-Service -Name $ServiceName -ErrorAction SilentlyContinue
-    $glpiInstalled = $svc -ne $null
-    
     $regPath = "HKLM:\SOFTWARE\GLPI-Agent"
-    if (-not (Test-Path $regPath)) {
-        $regPath = "HKLM:\SOFTWARE\Wow6432Node\GLPI-Agent"
-    }
+    $regPath64 = "HKLM:\SOFTWARE\Wow6432Node\GLPI-Agent"
+    $glpiInstalled = (Test-Path $regPath) -or (Test-Path $regPath64)
+    
+    $actualRegPath = if (Test-Path $regPath) { $regPath } else { $regPath64 }
     
     $currentTag = ""
-    if (Test-Path $regPath) {
-        $currentTag = (Get-ItemProperty -Path $regPath -Name "tag" -ErrorAction SilentlyContinue).tag
+    if ($glpiInstalled) {
+        $currentTag = (Get-ItemProperty -Path $actualRegPath -Name "tag" -ErrorAction SilentlyContinue).tag
     }
 
-    if ($glpiInstalled -or (Test-Path "C:\Program Files\GLPI-Agent\glpi-agent.bat")) {
+    if ($glpiInstalled) {
         $BorderGlpiStatusBanner.Background = New-Brush "#1a3a2a" # Dark Green
         $BorderGlpiStatusBanner.BorderBrush = New-Brush "#a6e3a1" # Light Green
         $TxtGlpiStatusIcon.Text = [char]0x2713
@@ -722,9 +719,9 @@ function Update-GlpiStatus {
         $TxtGlpiStatusTitle.Foreground = New-Brush "#a6e3a1"
         $TxtGlpiStatusDesc.Text = if ($currentTag) { "Terhubung dengan Asset TAG: $currentTag. Service berjalan normal." } else { "Terinstal tetapi TAG belum diset. Silakan isi TAG di panel kanan." }
         
-        # Disable installation fields? No, keep them enabled as requested
-        $TxtGlpiInstallTag.IsEnabled = $true
-        $BtnGlpiInstall.IsEnabled = $true
+        # Disable installation fields
+        $TxtGlpiInstallTag.IsEnabled = $false
+        $BtnGlpiInstall.IsEnabled = $false
         
         # Enable management
         $BorderGlpiManage.IsEnabled = $true
