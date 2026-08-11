@@ -1546,7 +1546,10 @@ $GlpiUninstallScriptBlock = {
 }
 
 $BtnGlpiInstall.Add_Click({
-    $glpiInstalled = (Get-Service -Name "glpi-agent" -ErrorAction SilentlyContinue) -ne $null -or (Test-Path "C:\Program Files\GLPI-Agent\glpi-agent.bat")
+    $regPath = "HKLM:\SOFTWARE\GLPI-Agent"
+    $regPath64 = "HKLM:\SOFTWARE\Wow6432Node\GLPI-Agent"
+    $glpiInstalled = (Test-Path $regPath) -or (Test-Path $regPath64)
+    
     $tag = $TxtGlpiInstallTag.Text.Trim()
     
     if (-not $glpiInstalled) {
