@@ -1387,16 +1387,21 @@ $GlpiInstallScriptBlock = {
     
     $ServerURL = "https://itpma-ticketing.pinusmerahabadi.co.id/plugins/glpiinventory/"
     $Arch = if ([Environment]::Is64BitOperatingSystem) { "x64" } else { "x86" }
+    $WinVer = [Environment]::OSVersion.Version
+    $IsLegacyWindows = ($WinVer.Major -lt 10) # Windows 7 (6.1), 8 (6.2), 8.1 (6.3)
     $TempDir = "$env:TEMP\glpi-agent-install"
     $MsiLogFile = "$TempDir\glpi-agent-msi.log"
     
     if (-not (Test-Path $TempDir)) { New-Item -ItemType Directory -Force -Path $TempDir | Out-Null }
     
     try {
-        $releaseUrl = if ($Arch -eq "x64") {
-            "https://api.github.com/repos/glpi-project/glpi-agent/releases/latest"
-        } else {
+        # Windows 7/8/8.1 (x86 & x64) → pakai versi 1.7.3 (stabil & kompatibel)
+        # Windows 10/11 x64 → pakai versi latest
+        $releaseUrl = if ($IsLegacyWindows -or $Arch -eq "x86") {
+            Write-Output "    [i] Terdeteksi Windows lama atau x86, menggunakan GLPI Agent v1.7.3..."
             "https://api.github.com/repos/glpi-project/glpi-agent/releases/tags/1.7.3"
+        } else {
+            "https://api.github.com/repos/glpi-project/glpi-agent/releases/latest"
         }
         $wc = New-Object Net.WebClient
         $wc.Headers.Add('User-Agent', 'Mozilla/5.0')
