@@ -25,8 +25,9 @@ $LocalRoot = if ($PSScriptRoot -and $PSScriptRoot -ne "") {
     $rand = Get-Random
     Write-Host "[WinSiRiady] Mengunduh berkas dari GitHub..." -ForegroundColor Cyan
     try {
-        Invoke-WebRequest -Uri "$baseUrl/apps.json?t=$rand" -OutFile (Join-Path $tempRoot "apps.json") -UseBasicParsing -ErrorAction Stop
-        Invoke-WebRequest -Uri "$baseUrl/tweaks.ps1?t=$rand" -OutFile (Join-Path $tempRoot "tweaks.ps1") -UseBasicParsing -ErrorAction Stop
+        $wc = New-Object Net.WebClient
+        $wc.DownloadFile("$baseUrl/apps.json?t=$rand", (Join-Path $tempRoot "apps.json"))
+        $wc.DownloadFile("$baseUrl/tweaks.ps1?t=$rand", (Join-Path $tempRoot "tweaks.ps1"))
         Write-Host "[WinSiRiady] Berkas pendukung siap." -ForegroundColor Green
     } catch {
         Write-Host "[WinSiRiady] GAGAL mengunduh berkas: $_" -ForegroundColor Red
@@ -1132,7 +1133,7 @@ $InstallScriptBlock = {
             $response.Close()
         } catch {
             Write-Output "    [!] HttpWebRequest gagal. Menggunakan fallback..."
-            Invoke-WebRequest -Uri $url -OutFile $dest -UseBasicParsing -ErrorAction Stop
+            (New-Object Net.WebClient).DownloadFile($url, $dest)
         }
     }
 
@@ -1376,7 +1377,7 @@ $GlpiInstallScriptBlock = {
             $response.Close()
         } catch {
             Write-Output "    [!] HttpWebRequest gagal. Menggunakan fallback..."
-            Invoke-WebRequest -Uri $url -OutFile $dest -UseBasicParsing -ErrorAction Stop
+            (New-Object Net.WebClient).DownloadFile($url, $dest)
         }
     }
 
@@ -1397,7 +1398,10 @@ $GlpiInstallScriptBlock = {
         } else {
             "https://api.github.com/repos/glpi-project/glpi-agent/releases/tags/1.7.3"
         }
-        $release = Invoke-RestMethod -Uri $releaseUrl -UseBasicParsing -ErrorAction Stop
+        $wc = New-Object Net.WebClient
+        $wc.Headers.Add('User-Agent', 'Mozilla/5.0')
+        $releaseJson = $wc.DownloadString($releaseUrl)
+        $release = $releaseJson | ConvertFrom-Json
         $asset = $release.assets | Where-Object { $_.name -match "glpi-agent-.*-$Arch\.msi$" } | Select-Object -First 1
         if (-not $asset) { throw "MSI $Arch tidak ditemukan" }
         
