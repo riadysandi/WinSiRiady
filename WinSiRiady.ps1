@@ -1401,7 +1401,8 @@ $GlpiInstallScriptBlock = {
             Write-Output "    [i] Terdeteksi Windows lama atau x86, menggunakan GLPI Agent v1.7.3..."
             "https://api.github.com/repos/glpi-project/glpi-agent/releases/tags/1.7.3"
         } else {
-            "https://api.github.com/repos/glpi-project/glpi-agent/releases/latest"
+            Write-Output "    [i] Menggunakan GLPI Agent v1.19 (versi dilock)..."
+            "https://api.github.com/repos/glpi-project/glpi-agent/releases/tags/1.19"
         }
         $wc = New-Object Net.WebClient
         $wc.Headers.Add('User-Agent', 'Mozilla/5.0')
