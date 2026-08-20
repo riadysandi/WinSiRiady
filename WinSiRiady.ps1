@@ -1398,10 +1398,10 @@ $GlpiInstallScriptBlock = {
         # Windows 7/8/8.1 (x86 & x64) → pakai versi 1.7.3 (stabil & kompatibel)
         # Windows 10/11 x64 → pakai versi latest
         $releaseUrl = if ($IsLegacyWindows -or $Arch -eq "x86") {
-            Write-Output "    [i] Terdeteksi Windows lama atau x86, menggunakan GLPI Agent v1.7.3..."
+            Write-Host "    [i] Terdeteksi Windows lama atau x86, menggunakan GLPI Agent v1.7.3..."
             "https://api.github.com/repos/glpi-project/glpi-agent/releases/tags/1.7.3"
         } else {
-            Write-Output "    [i] Menggunakan GLPI Agent v1.19 (versi dilock)..."
+            Write-Host "    [i] Menggunakan GLPI Agent v1.19 (versi dilock)..."
             "https://api.github.com/repos/glpi-project/glpi-agent/releases/tags/1.19"
         }
         $wc = New-Object Net.WebClient
