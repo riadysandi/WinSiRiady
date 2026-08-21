@@ -1427,7 +1427,7 @@ $GlpiInstallScriptBlock = {
             "/quiet", "/norestart",
             "/l*v", "`"$MsiLogFile`""
         )
-        $proc = Start-Process "msiexec.exe" -ArgumentList $msiArgs -PassThru -Wait
+        $proc = Start-Process "msiexec.exe" -ArgumentList $msiArgs -Verb RunAs -PassThru -Wait
         
         if ($proc.ExitCode -eq 0 -or $proc.ExitCode -eq 3010) {
             Write-Output "[+] GLPI Agent berhasil diinstal dengan TAG: $AssetTag"
