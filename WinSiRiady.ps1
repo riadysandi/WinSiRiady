@@ -14,7 +14,7 @@ if (-not $isAdmin) {
 }
 
 # === STEP 2: RESOLVE ROOT PATH ===
-[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+[Net.ServicePointManager]::SecurityProtocol = 3072
 
 $LocalRoot = if ($PSScriptRoot -and $PSScriptRoot -ne "") {
     $PSScriptRoot
@@ -1102,7 +1102,7 @@ $InstallScriptBlock = {
         $parentDir = Split-Path $dest
         if (-not (Test-Path $parentDir)) { New-Item -ItemType Directory -Path $parentDir -Force | Out-Null }
         try {
-            [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+            [Net.ServicePointManager]::SecurityProtocol = 3072
             $request = [System.Net.HttpWebRequest]::Create($url)
             $request.Timeout = 60000
             $request.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
@@ -1137,7 +1137,7 @@ $InstallScriptBlock = {
         }
     }
 
-    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+    [Net.ServicePointManager]::SecurityProtocol = 3072
     $ProgressPreference = 'SilentlyContinue'
     
     # Ratakan array jika bersarang (nested array)
@@ -1346,7 +1346,7 @@ $GlpiInstallScriptBlock = {
         $parentDir = Split-Path $dest
         if (-not (Test-Path $parentDir)) { New-Item -ItemType Directory -Path $parentDir -Force | Out-Null }
         try {
-            [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+            [Net.ServicePointManager]::SecurityProtocol = 3072
             $request = [System.Net.HttpWebRequest]::Create($url)
             $request.Timeout = 60000
             $request.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
@@ -1381,7 +1381,7 @@ $GlpiInstallScriptBlock = {
         }
     }
 
-    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+    [Net.ServicePointManager]::SecurityProtocol = 3072
     $ProgressPreference = 'SilentlyContinue'
     Write-Output "[PROG]1:3:Mencari rilis GLPI Agent terbaru..."
     
